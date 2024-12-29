@@ -1,0 +1,197 @@
+    <Container sx={{ marginTop: 4 }}>
+            <h2>Subjects</h2>
+            {/* Add Subject Form */}
+            <TextField
+              label="Subject Name"
+              variant="outlined"
+              fullWidth
+              value={subjectName}
+              onChange={(e) => setSubjectName(e.target.value)}
+              sx={{ marginBottom: 2 }}
+            />
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={
+                editMode !== null
+                  ? () => handleEditSubject(editMode)
+                  : handleAddSubject
+              }
+              sx={{ marginBottom: 2 }}
+            >
+              {editMode !== null ? "Edit Subject" : "Add Subject"}
+            </Button>
+
+            {/* Subjects Table */}
+            <TableContainer component={Paper}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Name</TableCell>
+                    <TableCell>Created At</TableCell>
+                    <TableCell>Modified At</TableCell>
+                    <TableCell>Actions</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {subjects.map((subject, index) => (
+                    <TableRow key={index}>
+                      <TableCell>{subject.name}</TableCell>
+                      <TableCell>{subject.createdAt}</TableCell>
+                      <TableCell>{subject.modifiedAt}</TableCell>
+                      <TableCell>
+                        <Button
+                          variant="outlined"
+                          color="primary"
+                          onClick={() => {
+                            setSubjectName(subject.name);
+                            setEditMode(index);
+                          }}
+                        >
+                          Edit
+                        </Button>
+                        <Button
+                          variant="outlined"
+                          color="secondary"
+                          onClick={() => handleDeleteSubject(index)}
+                        >
+                          Delete
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Container>
+             <Container sx={{ marginTop: 4 }}>
+            <h2>Room Types</h2>
+            {/* Add Room Type Form */}
+            <TextField
+              label="Room Type Name"
+              variant="outlined"
+              fullWidth
+              value={roomTypeName}
+              onChange={(e) => setRoomTypeName(e.target.value)}
+              sx={{ marginBottom: 2 }}
+            />
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={
+                editMode !== null
+                  ? () => handleEditRoomType(editMode)
+                  : handleAddRoomType
+              }
+              sx={{ marginBottom: 2 }}
+            >
+              {editMode !== null ? "Edit Room Type" : "Add Room Type"}
+            </Button>
+
+            {/* Room Types Table */}
+            <TableContainer component={Paper}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Name</TableCell>
+                    <TableCell>Created At</TableCell>
+                    <TableCell>Modified At</TableCell>
+                    <TableCell>Actions</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {roomTypes.map((roomType, index) => (
+                    <TableRow key={index}>
+                      <TableCell>{roomType.name}</TableCell>
+                      <TableCell>{roomType.createdAt}</TableCell>
+                      <TableCell>{roomType.modifiedAt}</TableCell>
+                      <TableCell>
+                        <Button
+                          variant="outlined"
+                          color="primary"
+                          onClick={() => {
+                            setRoomTypeName(roomType.name);
+                            setEditMode(index);
+                          }}
+                        >
+                          Edit
+                        </Button>
+                        <Button
+                          variant="outlined"
+                          color="secondary"
+                          onClick={() => handleDeleteRoomType(index)}
+                        >
+                          Delete
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Container>   <Container sx={{ marginTop: 4 }}>
+            <h2>Sections</h2>
+            {/* Add Section Form */}
+            <TextField
+              label="Section Name"
+              variant="outlined"
+              fullWidth
+              value={sectionName}
+              onChange={(e) => setSectionName(e.target.value)}
+              sx={{ marginBottom: 2 }}
+            />
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={
+                editMode !== null
+                  ? () => handleEditSection(editMode)
+                  : handleAddSection
+              }
+              sx={{ marginBottom: 2 }}
+            >
+              {editMode !== null ? "Edit Section" : "Add Section"}
+            </Button>
+
+            {/* Sections Table */}
+            <TableContainer component={Paper}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Name</TableCell>
+                    <TableCell>Created At</TableCell>
+                    <TableCell>Modified At</TableCell>
+                    <TableCell>Actions</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {sections.map((section, index) => (
+                    <TableRow key={index}>
+                      <TableCell>{section.name}</TableCell>
+                      <TableCell>{section.createdAt}</TableCell>
+                      <TableCell>{section.modifiedAt}</TableCell>
+                      <TableCell>
+                        <Button
+                          variant="outlined"
+                          color="primary"
+                          onClick={() => {
+                            setSectionName(section.name);
+                            setEditMode(index);
+                          }}
+                        >
+                          Edit
+                        </Button>
+                        <Button
+                          variant="outlined"
+                          color="secondary"
+                          onClick={() => handleDeleteSection(index)}
+                        >
+                          Delete
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Container>
