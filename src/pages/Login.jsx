@@ -76,6 +76,8 @@ export default function Login() {
             startAdornment: <Email style={{ marginRight: "8px" }} />,
           }}
           placeholder="Enter your email"
+          autoComplete="current-email"
+          aria-invalid="false"
         />
 
         <TextField
@@ -91,6 +93,8 @@ export default function Login() {
             startAdornment: <Lock style={{ marginRight: "8px" }} />,
           }}
           placeholder="Enter your password"
+          autoComplete="current-password"
+          aria-invalid="false"
         />
 
         <Button type="submit" variant="contained" color="primary" fullWidth>

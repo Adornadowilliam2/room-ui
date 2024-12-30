@@ -29,6 +29,7 @@ import {
   useTheme,
   useMediaQuery,
   Grid,
+  FormHelperText,
 } from "@mui/material";
 import { Menu } from "@mui/icons-material";
 import { CSSTransition } from "react-transition-group";
@@ -38,7 +39,7 @@ import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import { retrieveRooms, showRoom } from "../api/room";
 import { useCookies } from "react-cookie";
-import { indexBookings } from "../api/booking";
+import { indexBookings, store } from "../api/booking";
 import { logout as logoutApi } from "../api/auth";
 import { logout } from "../redux/authSlice";
 import { useDispatch } from "react-redux";
@@ -47,6 +48,11 @@ import Login from "./Login";
 import { retrieveRoomTypes } from "../api/roomtype";
 import { getSubjects } from "../api/subject";
 import { getSections } from "../api/section";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { MobileTimePicker } from "@mui/x-date-pickers/MobileTimePicker";
+import dayjs from "dayjs";
+import { toast } from "react-toastify";
 
 function Home() {
   const [selectedSidebar, setSelectedSidebar] = useState("Dashboard");
@@ -106,12 +112,14 @@ function Home() {
   const [searchTerm, setSearchTerm] = useState(""); // Search term for filtering
   const [daysFilter, setDaysFilter] = useState(7); // Default filter to 7 days
   const [newBooking, setNewBooking] = useState({
-    userName: "",
-    roomName: "",
-    startTime: "",
-    endTime: "",
-    subject: "",
+    roomId: "",
+    subjectId: "",
+    sectionId: "",
+    startTime: dayjs().startOf("hour"),
+    endTime: dayjs().add(1, "hour"),
     daysOfWeek: [],
+    date_from: "",
+    date_until: "",
   }); // State to handle new booking form
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm")); // Check if the screen is small (phone/tablet)
@@ -140,20 +148,6 @@ function Home() {
       ...prev,
       daysOfWeek: value,
     }));
-  };
-
-  // Handle form submission to add a new booking (for demo purposes)
-  const handleSubmitBooking = () => {
-    console.log("New booking submitted:", newBooking);
-    // Logic to add booking goes here
-    setNewBooking({
-      userName: "",
-      roomName: "",
-      startTime: "",
-      endTime: "",
-      subject: "",
-      daysOfWeek: [],
-    }); // Reset form
   };
 
   const filteredBookings = bookings.filter((booking) => {
@@ -196,6 +190,59 @@ function Home() {
 
   const contentRef = useRef(null); // Create a ref for content
 
+  const handleStartTimeChange = (newValue) => {
+    setNewBooking((prev) => ({
+      ...prev,
+      startTime: newValue,
+    }));
+  };
+
+  const handleEndTimeChange = (newValue) => {
+    setNewBooking((prev) => ({
+      ...prev,
+      endTime: newValue,
+    }));
+  };
+  const [warnings, setWarnings] = useState({});
+  const addBooking = (e) => {
+    e.preventDefault();
+
+    const body = {
+      user_id: user?.id,
+      room_id: newBooking.roomId,
+      start_time: newBooking.startTime.format("HH:mm"),
+      end_time: newBooking.endTime.format("HH:mm"),
+      subject_id: newBooking.subjectId,
+      section_id: newBooking.sectionId,
+      day_of_week: newBooking.daysOfWeek,
+      book_from: newBooking.date_from,
+      book_until: newBooking.date_until,
+    };
+
+    store(body, cookies.AUTH_TOKEN).then((res) => {
+      console.log(res);
+      if (res?.ok) {
+        // Clear form on success
+        setNewBooking({
+          roomId: "",
+          subjectId: "",
+          sectionId: "",
+          startTime: dayjs().startOf("hour"),
+          endTime: dayjs().add(1, "hour"),
+          daysOfWeek: [],
+          date_from: "",
+          date_until: "",
+        });
+        toast.success(res.message);
+        retrieve();
+        setWarnings({});
+      } else {
+        toast.error(res.message);
+        setWarnings(res?.errors);
+        console.log(res?.errors);
+      }
+    });
+  };
   return (
     <>
       {user ? (
@@ -312,197 +359,211 @@ function Home() {
                   </Container>
 
                   {/* Room Management Panel */}
-                  <Container
-                    sx={{
-                      padding: 2,
-                      border: "1px solid #ddd",
-                      borderRadius: 2,
-                    }}
-                  >
-                    <h3>Create New Booking</h3>
+                  <Container>
+                    <Typography variant="h6">Create New Booking</Typography>
                     <Divider sx={{ marginBottom: 2 }} />
-                    <Grid container spacing={2}>
-                      {/* Room Name Select */}
-                      <Grid item xs={6}>
-                        <FormControl fullWidth>
-                          <InputLabel id="room-select-label">
-                            Room Name
-                          </InputLabel>
-                          <Select
-                            labelId="room-select-label"
-                            name="roomName"
-                            value={newBooking.roomName}
+                    <form onSubmit={addBooking}>
+                      <Grid container spacing={2}>
+                        {/* Room Name Select */}
+                        <Grid item xs={6}>
+                          <FormControl fullWidth>
+                            <InputLabel id="room-select-label">
+                              Room Name
+                            </InputLabel>
+                            <Select
+                              labelId="room-select-label"
+                              name="roomId"
+                              value={newBooking.roomId}
+                              onChange={handleBookingChange}
+                              label="Room Name"
+                            >
+                              {rooms.map((room) => (
+                                <MenuItem key={room.id} value={room.id}>
+                                  {room.room_name} (Capacity: {room.capacity})
+                                </MenuItem>
+                              ))}
+                            </Select>
+                            {warnings?.room_id ? (
+                              <FormHelperText error>
+                                {warnings.room_id}
+                              </FormHelperText>
+                            ) : null}
+                          </FormControl>
+                        </Grid>
+
+                        {/* Days of the Week */}
+                        <Grid item xs={6}>
+                          <FormControl fullWidth>
+                            <InputLabel id="days-select-label">
+                              Days of the Week
+                            </InputLabel>
+                            <Select
+                              labelId="days-select-label"
+                              name="daysOfWeek"
+                              multiple
+                              value={newBooking.daysOfWeek}
+                              onChange={handleDaySelection}
+                              renderValue={(selected) => selected.join(", ")}
+                            >
+                              {[
+                                "Monday",
+                                "Tuesday",
+                                "Wednesday",
+                                "Thursday",
+                                "Friday",
+                                "Saturday",
+                                "Sunday",
+                              ].map((day) => (
+                                <MenuItem key={day} value={day}>
+                                  <Checkbox
+                                    checked={newBooking.daysOfWeek.includes(
+                                      day
+                                    )}
+                                  />
+                                  {day}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                            {warnings?.day_of_week ? (
+                              <FormHelperText error>
+                                {warnings.day_of_week}
+                              </FormHelperText>
+                            ) : null}
+                          </FormControl>
+                        </Grid>
+
+                        {/* Start Time */}
+                        <Grid item xs={6}>
+                          <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <MobileTimePicker
+                              value={newBooking.startTime}
+                              onChange={handleStartTimeChange}
+                            />
+                          </LocalizationProvider>
+                          {warnings?.start_time ? (
+                            <FormHelperText error>
+                              {warnings.start_time}
+                            </FormHelperText>
+                          ) : null}
+                        </Grid>
+
+                        {/* End Time */}
+                        <Grid item xs={6}>
+                          <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <MobileTimePicker
+                              value={newBooking.endTime}
+                              onChange={handleEndTimeChange}
+                            />
+                          </LocalizationProvider>
+                          {warnings?.end_time ? (
+                            <FormHelperText error>
+                              {warnings.end_time}
+                            </FormHelperText>
+                          ) : null}
+                        </Grid>
+
+                        {/* Subject Select */}
+                        <Grid item xs={6}>
+                          <FormControl fullWidth>
+                            <InputLabel id="subject-select-label">
+                              Subject
+                            </InputLabel>
+                            <Select
+                              labelId="subject-select-label"
+                              name="subjectId"
+                              value={newBooking.subjectId}
+                              onChange={handleBookingChange}
+                              label="Subject"
+                            >
+                              {subjects.map((subject) => (
+                                <MenuItem key={subject.id} value={subject.id}>
+                                  {subject.subject_name}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                            {warnings?.subject_id ? (
+                              <FormHelperText error>
+                                {warnings.subject_id}
+                              </FormHelperText>
+                            ) : null}
+                          </FormControl>
+                        </Grid>
+
+                        {/* Section Select */}
+                        <Grid item xs={6}>
+                          <FormControl fullWidth>
+                            <InputLabel id="section-select-label">
+                              Section
+                            </InputLabel>
+                            <Select
+                              labelId="section-select-label"
+                              name="sectionId"
+                              value={newBooking.sectionId}
+                              onChange={handleBookingChange}
+                              label="Section"
+                            >
+                              {sections.map((section) => (
+                                <MenuItem key={section.id} value={section.id}>
+                                  {section.section_name}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                            {warnings?.section_id ? (
+                              <FormHelperText error>
+                                {warnings.section_id}
+                              </FormHelperText>
+                            ) : null}
+                          </FormControl>
+                        </Grid>
+
+                        {/* Date From */}
+                        <Grid item xs={6}>
+                          <TextField
+                            label="Date From"
+                            name="date_from"
+                            type="date"
+                            value={newBooking.date_from}
                             onChange={handleBookingChange}
-                            label="Room Name"
-                          >
-                            {rooms.map((room, index) => (
-                              <MenuItem key={index + 1} value={room.room_name}>
-                                {room.room_name} (Capacity: {room.capacity})
-                              </MenuItem>
-                            ))}
-                          </Select>
-                        </FormControl>
-                      </Grid>
+                            fullWidth
+                            InputLabelProps={{
+                              shrink: true,
+                            }}
+                          />
+                          {warnings?.book_from ? (
+                            <FormHelperText error>
+                              {warnings.book_from}
+                            </FormHelperText>
+                          ) : null}
+                        </Grid>
 
-                      {/* Days of the Week Select */}
-                      <Grid item xs={6}>
-                        <FormControl fullWidth>
-                          <InputLabel id="days-select-label">
-                            Days of the Week
-                          </InputLabel>
-                          <Select
-                            labelId="days-select-label"
-                            name="daysOfWeek"
-                            multiple
-                            value={newBooking.daysOfWeek}
-                            onChange={handleDaySelection}
-                            renderValue={(selected) => selected.join(", ")}
-                          >
-                            {[
-                              "Mon",
-                              "Tue",
-                              "Wed",
-                              "Thu",
-                              "Fri",
-                              "Sat",
-                              "Sun",
-                            ].map((day) => (
-                              <MenuItem key={day} value={day}>
-                                <Checkbox
-                                  checked={
-                                    newBooking.daysOfWeek.indexOf(day) > -1
-                                  }
-                                />
-                                {day}
-                              </MenuItem>
-                            ))}
-                          </Select>
-                        </FormControl>
-                      </Grid>
-
-                      {/* Start Time TextField */}
-                      <Grid item xs={6}>
-                        <TextField
-                          label="Start Time"
-                          name="startTime"
-                          type="time"
-                          value={newBooking.startTime}
-                          onChange={handleBookingChange}
-                          fullWidth
-                          sx={{ marginBottom: 2 }}
-                          InputLabelProps={{
-                            shrink: true,
-                          }}
-                          size="small"
-                        />
-                      </Grid>
-
-                      {/* End Time TextField */}
-                      <Grid item xs={6}>
-                        <TextField
-                          label="End Time"
-                          name="endTime"
-                          type="time"
-                          value={newBooking.endTime}
-                          onChange={handleBookingChange}
-                          fullWidth
-                          sx={{ marginBottom: 2 }}
-                          InputLabelProps={{
-                            shrink: true,
-                          }}
-                          size="small"
-                        />
-                      </Grid>
-
-                      {/* Subject MenuItem */}
-                      <Grid item xs={6}>
-                        <FormControl fullWidth>
-                          <InputLabel id="subject-select-label">
-                            Subject
-                          </InputLabel>
-                          <Select
-                            labelId="subject-select-label"
-                            name="subject"
-                            value={newBooking.subject}
+                        {/* Date Until */}
+                        <Grid item xs={6}>
+                          <TextField
+                            label="Date Until"
+                            name="date_until"
+                            type="date"
+                            value={newBooking.book_until}
                             onChange={handleBookingChange}
-                            label="Subject"
-                          >
-                            {subjects.map((subject) => (
-                              <MenuItem key={subject.id} value={subject.name}>
-                                {subject.subject_name}
-                              </MenuItem>
-                            ))}
-                          </Select>
-                        </FormControl>
-                      </Grid>
+                            fullWidth
+                            InputLabelProps={{
+                              shrink: true,
+                            }}
+                          />
+                          {warnings?.book_until ? (
+                            <FormHelperText error>
+                              {warnings.book_until}
+                            </FormHelperText>
+                          ) : null}
+                        </Grid>
 
-                      {/* Section MenuItem */}
-                      <Grid item xs={6}>
-                        <FormControl fullWidth>
-                          <InputLabel id="section-select-label">
-                            Section
-                          </InputLabel>
-                          <Select
-                            labelId="section-select-label"
-                            name="section"
-                            value={newBooking.section}
-                            onChange={handleBookingChange}
-                            label="Section"
-                          >
-                            {sections.map((section) => (
-                              <MenuItem key={section.id} value={section.name}>
-                                {section.section_name}
-                              </MenuItem>
-                            ))}
-                          </Select>
-                        </FormControl>
+                        {/* Submit Button */}
+                        <Grid item xs={12}>
+                          <Button variant="contained" type="submit" fullWidth>
+                            Add Booking
+                          </Button>
+                        </Grid>
                       </Grid>
-
-                      {/* Date From Picker */}
-                      <Grid item xs={6}>
-                        <TextField
-                          label="Date From"
-                          name="date_from"
-                          type="date"
-                          value={newBooking.date_from}
-                          onChange={handleBookingChange}
-                          fullWidth
-                          sx={{ marginBottom: 2 }}
-                          InputLabelProps={{
-                            shrink: true,
-                          }}
-                          size="small"
-                        />
-                      </Grid>
-
-                      {/* Date Until Picker */}
-                      <Grid item xs={6}>
-                        <TextField
-                          label="Date Until"
-                          name="date_until"
-                          type="date"
-                          value={newBooking.date_until}
-                          onChange={handleBookingChange}
-                          fullWidth
-                          sx={{ marginBottom: 2 }}
-                          InputLabelProps={{
-                            shrink: true,
-                          }}
-                          size="small"
-                        />
-                      </Grid>
-
-                      {/* Add Booking Button */}
-                      <Grid item xs={12}>
-                        <Button
-                          variant="contained"
-                          fullWidth
-                          onClick={handleSubmitBooking}
-                        >
-                          Add Booking
-                        </Button>
-                      </Grid>
-                    </Grid>
+                    </form>
                   </Container>
                 </Box>
 
@@ -628,3 +689,4 @@ function Home() {
 }
 
 export default checkAuth(Home);
+
