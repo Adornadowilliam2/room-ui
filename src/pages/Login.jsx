@@ -19,26 +19,23 @@ export default function Login() {
 
   
   const handleSubmit = (e) => {
-      e.preventDefault();
-      const body = {
-          email: $("#email").val(),
-          password: $("#password").val(),
-      }
+    e.preventDefault();
+    const body = {
+      email: $("#email").val(),
+      password: $("#password").val(),
+    };
     loginApi(body).then((res) => {
-      console.log(res);
-         if (res?.ok) {
-           toast.success(res.message);
-           setWarnings({});
-           navigate("/");
-           setCookie("AUTH_TOKEN", res.data.token);
-           dispatch(login(res.data));
-         } else {
-           toast.error(res.message);
-           setWarnings(res?.errors);
-         }
-    
-    })
- 
+      if (res?.ok) {
+        toast.success(res.message);
+        setWarnings({});
+        navigate("/");
+        setCookie("AUTH_TOKEN", res.data.token);
+        dispatch(login(res.data));
+      } else {
+        toast.error(res.message);
+        setWarnings(res?.errors);
+      }
+    });
   };
 
   return (
@@ -70,14 +67,13 @@ export default function Login() {
           fullWidth
           margin="normal"
           id="email"
-          error={!!warnings?.email}
-          helperText={warnings?.email}
           InputProps={{
             startAdornment: <Email style={{ marginRight: "8px" }} />,
           }}
           placeholder="Enter your email"
           autoComplete="current-email"
           aria-invalid="false"
+          required
         />
 
         <TextField
@@ -87,14 +83,13 @@ export default function Login() {
           fullWidth
           margin="normal"
           id="password"
-          error={!!warnings?.password}
-          helperText={warnings?.password}
           InputProps={{
             startAdornment: <Lock style={{ marginRight: "8px" }} />,
           }}
           placeholder="Enter your password"
           autoComplete="current-password"
           aria-invalid="false"
+          required
         />
 
         <Button type="submit" variant="contained" color="primary" fullWidth>

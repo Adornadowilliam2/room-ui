@@ -1,10 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import {
   Container,
-  Drawer,
-  List,
-  ListItem,
-  ListItemText,
   AppBar,
   Toolbar,
   Typography,
@@ -18,26 +14,20 @@ import {
   Box,
   IconButton,
   TextField,
-  MenuItem,
-  Select,
-  InputLabel,
-  FormControl,
   Button,
-  Divider,
-  Checkbox,
-  FormControlLabel,
   useTheme,
   useMediaQuery,
-  Grid,
-  FormHelperText,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from "@mui/material";
 import { Menu } from "@mui/icons-material";
 import { CSSTransition } from "react-transition-group";
 import { useSelector } from "react-redux";
 import checkAuth from "../hoc/checkAuth";
-import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
-import { retrieveRooms, showRoom } from "../api/room";
+import { retrieveRooms } from "../api/room";
 import { useCookies } from "react-cookie";
 import { indexBookings, store } from "../api/booking";
 import { logout as logoutApi } from "../api/auth";
@@ -45,25 +35,36 @@ import { logout } from "../redux/authSlice";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Login from "./Login";
-import { retrieveRoomTypes } from "../api/roomtype";
-import { getSubjects } from "../api/subject";
+import {
+  destroyRoomType,
+  retrieveRoomTypes,
+  storeRoomType,
+  updateRoomType,
+} from "../api/roomtype";
+import {
+  deleteSubject,
+  getSubjects,
+  storeSubject,
+  updateSubject,
+} from "../api/subject";
 import { getSections } from "../api/section";
-import { LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { MobileTimePicker } from "@mui/x-date-pickers/MobileTimePicker";
 import dayjs from "dayjs";
 import { toast } from "react-toastify";
+import Sidebar from "../components/Sidebar";
+import Mainpage from "../components/Mainpage";
+import SubjectPage from "../components/Subjectpage";
+import RoomTypepage from "../components/RoomTypepage";
+import Sectionpage from "../components/Sectionpage";
 
 function Home() {
   const [selectedSidebar, setSelectedSidebar] = useState("Dashboard");
   const [open, setOpen] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState("");
-  const [subjectName, setSubjectName] = useState("");
+
   const [roomTypeName, setRoomTypeName] = useState("");
   const [sectionName, setSectionName] = useState("");
   const [rooms, setRooms] = useState([]);
   const [bookings, setBookings] = useState([]);
-  const [editMode, setEditMode] = useState(null);
   const [snackMessage, setSnackMessage] = useState("");
   const [sections, setSections] = useState([]);
   const user = useSelector((state) => state.auth.user);
@@ -124,56 +125,9 @@ function Home() {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm")); // Check if the screen is small (phone/tablet)
 
-  const handleDateChange = (newDate) => {
-    setDate(newDate);
-  };
-
   const toggleSidebar = () => {
     setOpen(!open);
   };
-
-  // Handle new booking form changes
-  const handleBookingChange = (event) => {
-    const { name, value } = event.target;
-    setNewBooking((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  // Handle day selection changes
-  const handleDaySelection = (event) => {
-    const { value } = event.target;
-    setNewBooking((prev) => ({
-      ...prev,
-      daysOfWeek: value,
-    }));
-  };
-
-  const filteredBookings = bookings.filter((booking) => {
-    const today = new Date();
-    const bookingDate = new Date(booking?.book_from); // Make sure it's a Date object
-    const diffTime = today - bookingDate; // Time difference in milliseconds
-    const diffDays = diffTime / (1000 * 3600 * 24); // Convert time difference to days
-
-    // Ensure bookingDate is valid
-    if (isNaN(bookingDate)) return false;
-
-    // Filter by date range
-    const isInDateRange =
-      (daysFilter === 7 && diffDays <= 7) ||
-      (daysFilter === 28 && diffDays <= 28) ||
-      (daysFilter === 90 && diffDays <= 90);
-
-    // Filter by search term (case-insensitive search for userName or roomName)
-    const matchesSearchTerm =
-      booking?.users?.name?.toLowerCase()?.includes(searchTerm.toLowerCase()) ||
-      booking?.rooms?.room_name
-        ?.toLowerCase()
-        ?.includes(searchTerm.toLowerCase());
-
-    return isInDateRange && matchesSearchTerm;
-  });
 
   const handleLogout = () => {
     logoutApi(cookies.AUTH_TOKEN).then((response) => {
@@ -190,123 +144,66 @@ function Home() {
 
   const contentRef = useRef(null); // Create a ref for content
 
-  const handleStartTimeChange = (newValue) => {
-    setNewBooking((prev) => ({
-      ...prev,
-      startTime: newValue,
-    }));
-  };
-
-  const handleEndTimeChange = (newValue) => {
-    setNewBooking((prev) => ({
-      ...prev,
-      endTime: newValue,
-    }));
-  };
+  const [subjectType, setSubjectType] = useState("");
   const [warnings, setWarnings] = useState({});
-  const addBooking = (e) => {
+  const handleAddRoomType = (e) => {
     e.preventDefault();
-
     const body = {
-      user_id: user?.id,
-      room_id: newBooking.roomId,
-      start_time: newBooking.startTime.format("HH:mm"),
-      end_time: newBooking.endTime.format("HH:mm"),
-      subject_id: newBooking.subjectId,
-      section_id: newBooking.sectionId,
-      day_of_week: newBooking.daysOfWeek,
-      book_from: newBooking.date_from,
-      book_until: newBooking.date_until,
+      room_type: roomTypeName,
     };
 
-    store(body, cookies.AUTH_TOKEN).then((res) => {
-      console.log(res);
+    storeRoomType(body, cookies.AUTH_TOKEN).then((res) => {
       if (res?.ok) {
-        // Clear form on success
-        setNewBooking({
-          roomId: "",
-          subjectId: "",
-          sectionId: "",
-          startTime: dayjs().startOf("hour"),
-          endTime: dayjs().add(1, "hour"),
-          daysOfWeek: [],
-          date_from: "",
-          date_until: "",
-        });
         toast.success(res.message);
         retrieve();
+        setRoomTypeName("");
         setWarnings({});
       } else {
         toast.error(res.message);
         setWarnings(res?.errors);
-        console.log(res?.errors);
       }
     });
   };
+  const [editDialog, setEditDialog] = useState(null);
+  const [deleteDialog, setDeleteDialog] = useState(null);
+
+  const handleEditRoomType = (id) => {
+    const body = {
+      room_type: editDialog?.room_type,
+    };
+    updateRoomType(body, cookies.AUTH_TOKEN, id).then((res) => {
+      if (res?.ok) {
+        toast.success(res.message);
+        retrieve();
+        setEditDialog(null);
+      } else {
+        toast.error(res.message);
+      }
+    });
+  };
+
+  const handleDeleteRoomType = (id) => {
+    destroyRoomType(cookies.AUTH_TOKEN, id).then((res) => {
+      if (res?.ok) {
+        toast.success(res.message);
+        retrieve();
+        setDeleteDialog(null);
+      } else {
+        toast.error(res.message);
+      }
+    });
+  };
+
   return (
     <>
       {user ? (
         <Box sx={{ display: "flex" }}>
           {/* Sidebar (Drawer) */}
-          <Drawer
-            sx={{
-              width: 240,
-              flexShrink: 0,
-              "& .MuiDrawer-paper": {
-                width: 240,
-                boxSizing: "border-box",
-              },
-            }}
-            variant="permanent"
-            anchor="left"
+          <Sidebar
             open={open}
-          >
-            <List>
-              <ListItem
-                onClick={() => handleSidebarClick("Dashboard")}
-                sx={{ cursor: "pointer" }}
-                button="true"
-              >
-                <ListItemText primary="Dashboard" />
-              </ListItem>
-              <ListItem
-                sx={{ cursor: "pointer" }}
-                button="true"
-                onClick={() => handleSidebarClick("Bookings")}
-              >
-                <ListItemText primary="Bookings" />
-              </ListItem>
-              <ListItem
-                onClick={() => handleSidebarClick("Subjects")}
-                sx={{ cursor: "pointer" }}
-                button="true"
-              >
-                <ListItemText primary="Subjects" />
-              </ListItem>
-              <ListItem
-                onClick={() => handleSidebarClick("Room Types")}
-                sx={{ cursor: "pointer" }}
-                button="true"
-              >
-                <ListItemText primary="Room Types" />
-              </ListItem>
-              <ListItem
-                onClick={() => handleSidebarClick("Sections")}
-                sx={{ cursor: "pointer" }}
-                button="true"
-              >
-                <ListItemText primary="Sections" />
-              </ListItem>
-              <ListItem
-                onClick={() => handleLogout()}
-                sx={{ cursor: "pointer" }}
-                button="true"
-              >
-                <ListItemText primary="Logout" />
-              </ListItem>
-            </List>
-          </Drawer>
-
+            handleSidebarClick={handleSidebarClick}
+            handleLogout={handleLogout}
+          />
           {/* Main Content */}
           <Box
             component="main"
@@ -330,354 +227,94 @@ function Home() {
                     <Menu />
                   </IconButton>
                 )}
-                <Typography variant="h6">Dashboard</Typography>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    width: "100%",
+                  }}
+                >
+                  <Typography variant="h6">MFI</Typography>
+                  <Typography>{user?.name}</Typography>
+                </Box>
               </Toolbar>
             </AppBar>
 
             {/* Dashboard Section */}
             <CSSTransition
-              in={selectedSidebar === "Dashboard"}
+              nodeRef={contentRef}
               timeout={300}
               classNames="fade"
               unmountOnExit
-              nodeRef={contentRef} // Pass the ref to CSSTransition
+              in={selectedSidebar === "Dashboard"}
             >
-              <Container ref={contentRef}>
-                <Box
-                  sx={{
-                    display: "flex",
-                    gap: 4,
-                    marginTop: 4,
-                    justifyContent: "space-evenly",
-                    alignItems: "center",
-                  }}
-                >
-                  {/* Calendar */}
-                  <Container sx={{ display: "block", margin: "auto" }}>
-                    <Calendar onChange={handleDateChange} value={date} />
-                    <p>Selected Date: {date.toDateString()}</p>
-                  </Container>
-
-                  {/* Room Management Panel */}
-                  <Container>
-                    <Typography variant="h6">Create New Booking</Typography>
-                    <Divider sx={{ marginBottom: 2 }} />
-                    <form onSubmit={addBooking}>
-                      <Grid container spacing={2}>
-                        {/* Room Name Select */}
-                        <Grid item xs={6}>
-                          <FormControl fullWidth>
-                            <InputLabel id="room-select-label">
-                              Room Name
-                            </InputLabel>
-                            <Select
-                              labelId="room-select-label"
-                              name="roomId"
-                              value={newBooking.roomId}
-                              onChange={handleBookingChange}
-                              label="Room Name"
-                            >
-                              {rooms.map((room) => (
-                                <MenuItem key={room.id} value={room.id}>
-                                  {room.room_name} (Capacity: {room.capacity})
-                                </MenuItem>
-                              ))}
-                            </Select>
-                            {warnings?.room_id ? (
-                              <FormHelperText error>
-                                {warnings.room_id}
-                              </FormHelperText>
-                            ) : null}
-                          </FormControl>
-                        </Grid>
-
-                        {/* Days of the Week */}
-                        <Grid item xs={6}>
-                          <FormControl fullWidth>
-                            <InputLabel id="days-select-label">
-                              Days of the Week
-                            </InputLabel>
-                            <Select
-                              labelId="days-select-label"
-                              name="daysOfWeek"
-                              multiple
-                              value={newBooking.daysOfWeek}
-                              onChange={handleDaySelection}
-                              renderValue={(selected) => selected.join(", ")}
-                            >
-                              {[
-                                "Monday",
-                                "Tuesday",
-                                "Wednesday",
-                                "Thursday",
-                                "Friday",
-                                "Saturday",
-                                "Sunday",
-                              ].map((day) => (
-                                <MenuItem key={day} value={day}>
-                                  <Checkbox
-                                    checked={newBooking.daysOfWeek.includes(
-                                      day
-                                    )}
-                                  />
-                                  {day}
-                                </MenuItem>
-                              ))}
-                            </Select>
-                            {warnings?.day_of_week ? (
-                              <FormHelperText error>
-                                {warnings.day_of_week}
-                              </FormHelperText>
-                            ) : null}
-                          </FormControl>
-                        </Grid>
-
-                        {/* Start Time */}
-                        <Grid item xs={6}>
-                          <LocalizationProvider dateAdapter={AdapterDayjs}>
-                            <MobileTimePicker
-                              value={newBooking.startTime}
-                              onChange={handleStartTimeChange}
-                            />
-                          </LocalizationProvider>
-                          {warnings?.start_time ? (
-                            <FormHelperText error>
-                              {warnings.start_time}
-                            </FormHelperText>
-                          ) : null}
-                        </Grid>
-
-                        {/* End Time */}
-                        <Grid item xs={6}>
-                          <LocalizationProvider dateAdapter={AdapterDayjs}>
-                            <MobileTimePicker
-                              value={newBooking.endTime}
-                              onChange={handleEndTimeChange}
-                            />
-                          </LocalizationProvider>
-                          {warnings?.end_time ? (
-                            <FormHelperText error>
-                              {warnings.end_time}
-                            </FormHelperText>
-                          ) : null}
-                        </Grid>
-
-                        {/* Subject Select */}
-                        <Grid item xs={6}>
-                          <FormControl fullWidth>
-                            <InputLabel id="subject-select-label">
-                              Subject
-                            </InputLabel>
-                            <Select
-                              labelId="subject-select-label"
-                              name="subjectId"
-                              value={newBooking.subjectId}
-                              onChange={handleBookingChange}
-                              label="Subject"
-                            >
-                              {subjects.map((subject) => (
-                                <MenuItem key={subject.id} value={subject.id}>
-                                  {subject.subject_name}
-                                </MenuItem>
-                              ))}
-                            </Select>
-                            {warnings?.subject_id ? (
-                              <FormHelperText error>
-                                {warnings.subject_id}
-                              </FormHelperText>
-                            ) : null}
-                          </FormControl>
-                        </Grid>
-
-                        {/* Section Select */}
-                        <Grid item xs={6}>
-                          <FormControl fullWidth>
-                            <InputLabel id="section-select-label">
-                              Section
-                            </InputLabel>
-                            <Select
-                              labelId="section-select-label"
-                              name="sectionId"
-                              value={newBooking.sectionId}
-                              onChange={handleBookingChange}
-                              label="Section"
-                            >
-                              {sections.map((section) => (
-                                <MenuItem key={section.id} value={section.id}>
-                                  {section.section_name}
-                                </MenuItem>
-                              ))}
-                            </Select>
-                            {warnings?.section_id ? (
-                              <FormHelperText error>
-                                {warnings.section_id}
-                              </FormHelperText>
-                            ) : null}
-                          </FormControl>
-                        </Grid>
-
-                        {/* Date From */}
-                        <Grid item xs={6}>
-                          <TextField
-                            label="Date From"
-                            name="date_from"
-                            type="date"
-                            value={newBooking.date_from}
-                            onChange={handleBookingChange}
-                            fullWidth
-                            InputLabelProps={{
-                              shrink: true,
-                            }}
-                          />
-                          {warnings?.book_from ? (
-                            <FormHelperText error>
-                              {warnings.book_from}
-                            </FormHelperText>
-                          ) : null}
-                        </Grid>
-
-                        {/* Date Until */}
-                        <Grid item xs={6}>
-                          <TextField
-                            label="Date Until"
-                            name="date_until"
-                            type="date"
-                            value={newBooking.book_until}
-                            onChange={handleBookingChange}
-                            fullWidth
-                            InputLabelProps={{
-                              shrink: true,
-                            }}
-                          />
-                          {warnings?.book_until ? (
-                            <FormHelperText error>
-                              {warnings.book_until}
-                            </FormHelperText>
-                          ) : null}
-                        </Grid>
-
-                        {/* Submit Button */}
-                        <Grid item xs={12}>
-                          <Button variant="contained" type="submit" fullWidth>
-                            Add Booking
-                          </Button>
-                        </Grid>
-                      </Grid>
-                    </form>
-                  </Container>
-                </Box>
-
-                {/* Search and Filter Controls */}
-                <Container sx={{ marginTop: 4, display: "flex", gap: 2 }}>
-                  <TextField
-                    label="Search"
-                    variant="outlined"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    fullWidth
-                  />
-                  <FormControl fullWidth>
-                    <InputLabel id="days-filter-label">
-                      Filter by Days
-                    </InputLabel>
-                    <Select
-                      labelId="days-filter-label"
-                      value={daysFilter}
-                      onChange={(event) => setDaysFilter(event.target.value)}
-                      label="Filter by Days"
-                    >
-                      <MenuItem value={7}>Last 7 Days</MenuItem>
-                      <MenuItem value={28}>Last 28 Days</MenuItem>
-                      <MenuItem value={90}>Last 90 Days</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Container>
-
-                {/* Table for Bookings */}
-                <Container sx={{ marginTop: 4 }}>
-                  <h2>Recents</h2>
-                  <TableContainer component={Paper}>
-                    <Table>
-                      <TableHead>
-                        <TableRow>
-                          <TableCell>User Name</TableCell>
-                          <TableCell>Room Name</TableCell>
-                          <TableCell>Day of the Week</TableCell>
-                          <TableCell>Time</TableCell>
-                          <TableCell>Subject</TableCell>
-                          <TableCell>Section</TableCell>
-                          <TableCell>Date</TableCell>
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        {filteredBookings.map((booking) => (
-                          <TableRow key={booking.id}>
-                            <TableCell>{booking?.users?.name}</TableCell>
-                            <TableCell>{booking?.rooms?.room_name}</TableCell>
-                            <TableCell>{booking.day_of_week}</TableCell>
-                            <TableCell>
-                              {booking.start_time.slice(0, 5) +
-                                " - " +
-                                booking.end_time.slice(0, 5)}
-                            </TableCell>
-                            <TableCell>
-                              {booking?.subjects?.subject_name}
-                            </TableCell>
-                            <TableCell>
-                              {booking?.sections?.section_name}
-                            </TableCell>
-                            <TableCell>{booking.book_from}</TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
-                </Container>
-              </Container>
+              <Mainpage
+                bookings={bookings}
+                rooms={rooms}
+                subjects={subjects}
+                sections={sections}
+                user={user}
+                store={store}
+                cookies={cookies}
+                retrieve={retrieve}
+              />
             </CSSTransition>
 
             {/* Bookings Section */}
             <CSSTransition
-              in={selectedSidebar === "Bookings"}
+              nodeRef={contentRef}
               timeout={300}
               classNames="fade"
               unmountOnExit
-              nodeRef={contentRef} // Pass the ref to CSSTransition
+              in={selectedSidebar === "Bookings"}
             >
               <h1 ref={contentRef}>Bookings</h1>
             </CSSTransition>
 
             {/* Subjects Section */}
             <CSSTransition
-              in={selectedSidebar === "Subjects"}
+              nodeRef={contentRef}
               timeout={300}
               classNames="fade"
               unmountOnExit
-              nodeRef={contentRef} // Pass the ref to CSSTransition
+              in={selectedSidebar === "Subjects"}
             >
-              <h1 ref={contentRef}>Subjects</h1>
+              <SubjectPage
+                cookies={cookies}
+                retrieve={retrieve}
+                subjects={subjects}
+              />
             </CSSTransition>
 
             {/* Room Types Section */}
             <CSSTransition
-              in={selectedSidebar === "Room Types"}
+              nodeRef={contentRef}
               timeout={300}
               classNames="fade"
               unmountOnExit
-              nodeRef={contentRef} // Pass the ref to CSSTransition
+              in={selectedSidebar === "Room Types"}
             >
-              <h1 ref={contentRef}>Room Types</h1>
+              <RoomTypepage
+                cookies={cookies}
+                retrieve={retrieve}
+                roomTypes={roomTypes}
+              />
             </CSSTransition>
 
             {/* Sections Section */}
             <CSSTransition
-              in={selectedSidebar === "Sections"}
+              nodeRef={contentRef}
               timeout={300}
               classNames="fade"
               unmountOnExit
-              nodeRef={contentRef} // Pass the ref to CSSTransition
+              in={selectedSidebar === "Sections"}
             >
-              <h1 ref={contentRef}>Sections</h1>
+              <Sectionpage
+                cookies={cookies}
+                retrieve={retrieve}
+                sections={sections}
+              />
             </CSSTransition>
           </Box>
         </Box>
@@ -689,4 +326,4 @@ function Home() {
 }
 
 export default checkAuth(Home);
-
+ 
