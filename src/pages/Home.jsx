@@ -55,6 +55,7 @@ import Mainpage from "../components/Mainpage";
 import SubjectPage from "../components/Subjectpage";
 import RoomTypepage from "../components/RoomTypepage";
 import Sectionpage from "../components/Sectionpage";
+import Roompage from "../components/Roompage";
 
 function Home() {
   const [selectedSidebar, setSelectedSidebar] = useState("Dashboard");
@@ -270,6 +271,20 @@ function Home() {
               in={selectedSidebar === "Bookings"}
             >
               <h1 ref={contentRef}>Bookings</h1>
+            </CSSTransition>
+            <CSSTransition
+              nodeRef={contentRef}
+              timeout={300}
+              classNames="fade"
+              unmountOnExit
+              in={selectedSidebar === "Rooms"}
+            >
+              <Roompage
+                cookies={cookies}
+                retrieve={retrieve}
+                rooms={rooms}
+                roomTypes={roomTypes}
+              />
             </CSSTransition>
 
             {/* Subjects Section */}
