@@ -26,6 +26,7 @@ import {
   DialogActions,
   IconButton,
   Icon,
+  Tab,
 } from "@mui/material";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
@@ -81,7 +82,6 @@ export default function Mainpage({
     )
   );
 
-  // Function to add red dot for bookings
   const tileContent = ({ date, view }) => {
     const dateString = date.toISOString().split("T")[0];
     if (bookedDates.has(dateString)) {
@@ -157,7 +157,7 @@ export default function Mainpage({
     }));
   };
   const [warnings, setWarnings] = useState({});
-  const addBooking = (e) => {
+  const handleAddBooking = (e) => {
     e.preventDefault();
 
     const body = {
@@ -286,7 +286,7 @@ export default function Mainpage({
         <Container>
           <Typography variant="h6">Create New Booking</Typography>
           <Divider sx={{ marginBottom: 2 }} />
-          <form onSubmit={addBooking}>
+          <Box component="form" onSubmit={handleAddBooking}>
             <Grid container spacing={2}>
               {/* Room Name Select */}
               <Grid item xs={6}>
@@ -467,7 +467,7 @@ export default function Mainpage({
                 </Button>
               </Grid>
             </Grid>
-          </form>
+          </Box>
         </Container>
       </Box>
       {/* Search and Filter Controls */}
@@ -507,7 +507,9 @@ export default function Mainpage({
                 <TableCell>Time</TableCell>
                 <TableCell>Subject</TableCell>
                 <TableCell>Section</TableCell>
-                <TableCell>Date</TableCell>
+                <TableCell>Book From</TableCell>
+                <TableCell>Book Until</TableCell>
+                <TableCell>Status</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -526,6 +528,21 @@ export default function Mainpage({
                   <TableCell>{booking?.subjects?.subject_name}</TableCell>
                   <TableCell>{booking?.sections?.section_name}</TableCell>
                   <TableCell>{booking.book_from}</TableCell>
+                  <TableCell>{booking.book_until}</TableCell>
+                  <TableCell
+                    style={{
+                      color:
+                        booking.status === "confirmed"
+                          ? "green"
+                          : booking.status === "pending"
+                          ? "orange"
+                          : booking.status === "rejected"
+                          ? "red"
+                          : "black",
+                    }}
+                  >
+                    {booking.status}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

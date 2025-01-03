@@ -270,7 +270,16 @@ function Home() {
               unmountOnExit
               in={selectedSidebar === "Bookings"}
             >
-              <Bookingpage bookings={bookings} retrieve={retrieve} rooms={rooms} subjects={subjects} sections={sections} user={user} cookies={cookies} store={store}/>
+              <Bookingpage
+                bookings={bookings}
+                retrieve={retrieve}
+                rooms={rooms}
+                subjects={subjects}
+                sections={sections}
+                user={user}
+                cookies={cookies}
+                store={store}
+              />
             </CSSTransition>
 
             {/* Subjects Section */}
