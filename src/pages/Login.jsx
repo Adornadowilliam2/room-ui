@@ -57,9 +57,6 @@ export default function Login() {
           borderRadius: "5px",
         }}
       >
-        <IconButton onClick={() => navigate("/")}>
-          <Close />
-        </IconButton>
         <h2 style={{ textAlign: "center" }}>Login</h2>
         <TextField
           label="Email"

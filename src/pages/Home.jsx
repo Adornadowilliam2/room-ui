@@ -202,8 +202,10 @@ function Home() {
           {/* Sidebar (Drawer) */}
           <Sidebar
             open={open}
-            handleSidebarClick={handleSidebarClick}
+            handleSidebarClick={setSelectedSidebar}
             handleLogout={handleLogout}
+            isSmallScreen={isSmallScreen}
+            setOpen={setOpen}
           />
           {/* Main Content */}
           <Box
@@ -259,6 +261,7 @@ function Home() {
                 store={store}
                 cookies={cookies}
                 retrieve={retrieve}
+                isSmallScreen={isSmallScreen}
               />
             </CSSTransition>
 

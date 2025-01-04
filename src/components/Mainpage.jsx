@@ -46,6 +46,7 @@ export default function Mainpage({
   store,
   cookies,
   retrieve,
+  isSmallScreen,
 }) {
   const [date, setDate] = useState(new Date());
   const [searchTerm, setSearchTerm] = useState("");
@@ -203,6 +204,7 @@ export default function Mainpage({
           marginTop: 4,
           justifyContent: "space-evenly",
           alignItems: "center",
+          flexWrap: isSmallScreen ? "wrap" : "nowrap",
         }}
       >
         {/* Calendar */}
@@ -283,13 +285,25 @@ export default function Mainpage({
         </Dialog>
 
         {/* Room Management Panel */}
-        <Container>
+        <Container
+          sx={{
+            width: isSmallScreen ? "400px" : "100%",
+            border: isSmallScreen ? "1px solid black" : "none",
+            p: isSmallScreen ? 2 : 0,
+          }}
+        >
           <Typography variant="h6">Create New Booking</Typography>
           <Divider sx={{ marginBottom: 2 }} />
           <Box component="form" onSubmit={handleAddBooking}>
-            <Grid container spacing={2}>
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: 2,
+              }}
+            >
               {/* Room Name Select */}
-              <Grid item xs={6}>
+              <Box>
                 <FormControl fullWidth>
                   <InputLabel id="room-select-label">Room Name</InputLabel>
                   <Select
@@ -309,10 +323,10 @@ export default function Mainpage({
                     <FormHelperText error>{warnings.room_id}</FormHelperText>
                   ) : null}
                 </FormControl>
-              </Grid>
+              </Box>
 
               {/* Days of the Week */}
-              <Grid item xs={6}>
+              <Box>
                 <FormControl fullWidth>
                   <InputLabel id="days-select-label">
                     Days of the Week
@@ -348,10 +362,10 @@ export default function Mainpage({
                     </FormHelperText>
                   ) : null}
                 </FormControl>
-              </Grid>
+              </Box>
 
               {/* Start Time */}
-              <Grid item xs={6}>
+              <Box>
                 <InputLabel>Start Time</InputLabel>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <MobileTimePicker
@@ -362,10 +376,10 @@ export default function Mainpage({
                 {warnings?.start_time ? (
                   <FormHelperText error>{warnings.start_time}</FormHelperText>
                 ) : null}
-              </Grid>
+              </Box>
 
               {/* End Time */}
-              <Grid item xs={6}>
+              <Box>
                 <InputLabel>End Time</InputLabel>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <MobileTimePicker
@@ -376,10 +390,10 @@ export default function Mainpage({
                 {warnings?.end_time ? (
                   <FormHelperText error>{warnings.end_time}</FormHelperText>
                 ) : null}
-              </Grid>
+              </Box>
 
               {/* Subject Select */}
-              <Grid item xs={6}>
+              <Box>
                 <FormControl fullWidth>
                   <InputLabel id="subject-select-label">Subject</InputLabel>
                   <Select
@@ -399,10 +413,10 @@ export default function Mainpage({
                     <FormHelperText error>{warnings.subject_id}</FormHelperText>
                   ) : null}
                 </FormControl>
-              </Grid>
+              </Box>
 
               {/* Section Select */}
-              <Grid item xs={6}>
+              <Box>
                 <FormControl fullWidth>
                   <InputLabel id="section-select-label">Section</InputLabel>
                   <Select
@@ -422,10 +436,10 @@ export default function Mainpage({
                     <FormHelperText error>{warnings.section_id}</FormHelperText>
                   ) : null}
                 </FormControl>
-              </Grid>
+              </Box>
 
               {/* Date From */}
-              <Grid item xs={6}>
+              <Box>
                 <TextField
                   label="Date From"
                   name="date_from"
@@ -440,10 +454,10 @@ export default function Mainpage({
                 {warnings?.book_from ? (
                   <FormHelperText error>{warnings.book_from}</FormHelperText>
                 ) : null}
-              </Grid>
+              </Box>
 
               {/* Date Until */}
-              <Grid item xs={6}>
+              <Box>
                 <TextField
                   label="Date Until"
                   name="date_until"
@@ -458,15 +472,13 @@ export default function Mainpage({
                 {warnings?.book_until ? (
                   <FormHelperText error>{warnings.book_until}</FormHelperText>
                 ) : null}
-              </Grid>
+              </Box>
+            </Box>
+            {/* Submit Button */}
 
-              {/* Submit Button */}
-              <Grid item xs={12}>
-                <Button variant="contained" type="submit" fullWidth>
-                  Add Booking
-                </Button>
-              </Grid>
-            </Grid>
+            <Button variant="contained" type="submit" sx={{ mt: 2 }} fullWidth>
+              Add Booking
+            </Button>
           </Box>
         </Container>
       </Box>
@@ -501,34 +513,153 @@ export default function Mainpage({
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>User Name</TableCell>
-                <TableCell>Room Name</TableCell>
-                <TableCell>Day of the Week</TableCell>
-                <TableCell>Time</TableCell>
-                <TableCell>Subject</TableCell>
-                <TableCell>Section</TableCell>
-                <TableCell>Book From</TableCell>
-                <TableCell>Book Until</TableCell>
-                <TableCell>Status</TableCell>
+                <TableCell
+                  sx={{
+                    p: isSmallScreen ? 0 : 2,
+                    border: isSmallScreen && "1px solid black",
+                  }}
+                >
+                  {isSmallScreen ? "User" : "User Name"}
+                </TableCell>
+                <TableCell
+                  sx={{
+                    p: isSmallScreen ? 0 : 2,
+                    border: isSmallScreen && "1px solid black",
+                  }}
+                >
+                  Room Name
+                </TableCell>
+                <TableCell
+                  sx={{
+                    p: isSmallScreen ? 0 : 2,
+                    border: isSmallScreen && "1px solid black",
+                  }}
+                >
+                  Day of the Week
+                </TableCell>
+                <TableCell
+                  sx={{
+                    p: isSmallScreen ? 0 : 2,
+                    border: isSmallScreen && "1px solid black",
+                  }}
+                >
+                  Time
+                </TableCell>
+                <TableCell
+                  sx={{
+                    p: isSmallScreen ? 0 : 2,
+                    border: isSmallScreen && "1px solid black",
+                  }}
+                >
+                  {isSmallScreen ? "Sub" : " Subject"}
+                </TableCell>
+                <TableCell
+                  sx={{
+                    p: isSmallScreen ? 0 : 2,
+                    border: isSmallScreen && "1px solid black",
+                  }}
+                >
+                  {isSmallScreen ? "Sec" : "Section"}
+                </TableCell>
+                <TableCell
+                  sx={{
+                    p: isSmallScreen ? 0 : 2,
+                    border: isSmallScreen && "1px solid black",
+                  }}
+                >
+                  Book From
+                </TableCell>
+                <TableCell
+                  sx={{
+                    p: isSmallScreen ? 0 : 2,
+                    border: isSmallScreen && "1px solid black",
+                  }}
+                >
+                  Book Until
+                </TableCell>
+                <TableCell
+                  sx={{
+                    p: isSmallScreen ? 0 : 2,
+                    border: isSmallScreen && "1px solid black",
+                  }}
+                >
+                  Status
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {filteredBookings.map((booking) => (
                 <TableRow key={booking.id}>
-                  <TableCell>
+                  <TableCell
+                    sx={{
+                      p: isSmallScreen ? 0 : 2,
+                      border: isSmallScreen && "1px solid black",
+                    }}
+                  >
                     {booking?.id + ".) " + booking?.users?.name}
                   </TableCell>
-                  <TableCell>{booking?.rooms?.room_name}</TableCell>
-                  <TableCell>{booking.day_of_week}</TableCell>
-                  <TableCell>
+                  <TableCell
+                    sx={{
+                      p: isSmallScreen ? 0 : 2,
+                      border: isSmallScreen && "1px solid black",
+                    }}
+                  >
+                    {booking?.rooms?.room_name}
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      p: isSmallScreen ? 0 : 2,
+                      border: isSmallScreen && "1px solid black",
+                    }}
+                  >
+                    {isSmallScreen
+                      ? booking.day_of_week.slice(0, 3)
+                      : booking.day_of_week}
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      p: isSmallScreen ? 0 : 2,
+                      border: isSmallScreen && "1px solid black",
+                    }}
+                  >
                     {booking.start_time.slice(0, 5) +
                       " - " +
                       booking.end_time.slice(0, 5)}
                   </TableCell>
-                  <TableCell>{booking?.subjects?.subject_name}</TableCell>
-                  <TableCell>{booking?.sections?.section_name}</TableCell>
-                  <TableCell>{booking.book_from}</TableCell>
-                  <TableCell>{booking.book_until}</TableCell>
+                  <TableCell
+                    sx={{
+                      p: isSmallScreen ? 0 : 2,
+                      border: isSmallScreen && "1px solid black",
+                    }}
+                  >
+                    {isSmallScreen
+                      ? booking?.subjects?.subject_name.slice(0, 4)
+                      : booking?.subjects?.subject_name}
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      p: isSmallScreen ? 0 : 2,
+                      border: isSmallScreen && "1px solid black",
+                    }}
+                  >
+                    {booking?.sections?.section_name}
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      p: isSmallScreen ? 0 : 2,
+                      border: isSmallScreen && "1px solid black",
+                    }}
+                  >
+                    {booking.book_from}
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      p: isSmallScreen ? 0 : 2,
+                      border: isSmallScreen && "1px solid black",
+                    }}
+                  >
+                    {booking.book_until}
+                  </TableCell>
                   <TableCell
                     style={{
                       color:
@@ -539,9 +670,11 @@ export default function Mainpage({
                           : booking.status === "rejected"
                           ? "red"
                           : "black",
+                      p: isSmallScreen ? 0 : 2,
+                      border: isSmallScreen && "1px solid black",
                     }}
                   >
-                    {booking.status}
+                    {isSmallScreen ? "*" : booking?.status}
                   </TableCell>
                 </TableRow>
               ))}

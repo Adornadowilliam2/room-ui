@@ -1,6 +1,13 @@
+import { Close } from "@mui/icons-material";
 import { Drawer, List, ListItem, ListItemText } from "@mui/material";
 import "react-calendar/dist/Calendar.css";
-export default function Sidebar({ open, handleSidebarClick, handleLogout }) {
+export default function Sidebar({
+  open,
+  handleSidebarClick,
+  isSmallScreen,
+  handleLogout,
+  setOpen,
+}) {
   return (
     <Drawer
       sx={{
@@ -11,11 +18,25 @@ export default function Sidebar({ open, handleSidebarClick, handleLogout }) {
           boxSizing: "border-box",
         },
       }}
-      variant="permanent"
+      variant={isSmallScreen ? "temporary" : "permanent"}
       anchor="left"
-      open={open}
+      open={isSmallScreen ? !open : !!open}
     >
       <List>
+        {isSmallScreen ? (
+          <ListItem
+            onClick={() => setOpen(!open)}
+            sx={{
+              cursor: "pointer",
+
+              display: "flex",
+              justifyContent: "end",
+            }}
+            button="true"
+          >
+            <Close />
+          </ListItem>
+        ) : null}
         <ListItem
           onClick={() => handleSidebarClick("Dashboard")}
           sx={{ cursor: "pointer" }}

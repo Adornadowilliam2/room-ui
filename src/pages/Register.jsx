@@ -57,9 +57,6 @@ export default function Register() {
           borderRadius: "5px",
         }}
       >
-        <IconButton onClick={() => navigate("/")}>
-          <Close />
-        </IconButton>
         <h2 style={{ textAlign: "center" }}>Register</h2>
         <TextField
           label="Username"
