@@ -17,6 +17,10 @@ export default function Roompage() {
             <Select value="" sx={{mt:2}}  displayEmpty fullWidth>
                 <MenuItem value="" >Select a RoomType</MenuItem>
             </Select>
+            <TextField sx={{mt:2}} label='Location' variant='outlined' fullWidth />
+            <TextField sx={{mt:2}} label='Description' variant='outlined' fullWidth />
+            <TextField sx={{mt:2}} label='Capacity' variant='outlined' fullWidth />
+            <Box></Box>
             </DialogContent>
             <DialogActions>
                 <Button variant='contained' color='info'>Create</Button>
