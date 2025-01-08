@@ -52,6 +52,13 @@ export default function Sidebar({
           <ListItemText primary="Bookings" />
         </ListItem>
         <ListItem
+          sx={{ cursor: "pointer" }}
+          button="true"
+          onClick={() => handleSidebarClick("Rooms")}
+        >
+          <ListItemText primary="Rooms" />
+        </ListItem>
+        <ListItem
           onClick={() => handleSidebarClick("Subjects")}
           sx={{ cursor: "pointer" }}
           button="true"

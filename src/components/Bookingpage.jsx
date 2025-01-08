@@ -201,8 +201,10 @@ function Bookingpage({
     return null;
   };
 
+  const contentRef = useRef(null);
+
   return (
-    <Box sx={{ padding: 2 }}>
+    <Box sx={{ padding: 2 }} ref={contentRef}>
       {/* Section Selector */}
       <FormControl fullWidth>
         <InputLabel>Section name</InputLabel>
@@ -311,6 +313,11 @@ function Bookingpage({
                   <MobileTimePicker
                     value={newBooking.startTime}
                     onChange={handleStartTimeChange}
+                    sx={{
+                      '& .MuiInputBase-root': {
+                        width:"300px" 
+                      },
+                    }}
                   />
                 </LocalizationProvider>
                 {warnings?.start_time ? (
@@ -325,6 +332,11 @@ function Bookingpage({
                   <MobileTimePicker
                     value={newBooking.endTime}
                     onChange={handleEndTimeChange}
+                    sx={{
+                      '& .MuiInputBase-root': {
+                        width:"300px" 
+                      },
+                    }}
                   />
                 </LocalizationProvider>
                 {warnings?.end_time ? (

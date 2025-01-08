@@ -365,12 +365,17 @@ export default function Mainpage({
               </Box>
 
               {/* Start Time */}
-              <Box>
+              <Box >
                 <InputLabel>Start Time</InputLabel>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <MobileTimePicker
                     value={newBooking.startTime}
                     onChange={handleStartTimeChange}
+                    sx={{
+                      '& .MuiInputBase-root': {
+                        width:"250px" 
+                      },
+                    }}
                   />
                 </LocalizationProvider>
                 {warnings?.start_time ? (
@@ -385,6 +390,11 @@ export default function Mainpage({
                   <MobileTimePicker
                     value={newBooking.endTime}
                     onChange={handleEndTimeChange}
+                    sx={{
+                      '& .MuiInputBase-root': {
+                        width:"250px" 
+                      },
+                    }}
                   />
                 </LocalizationProvider>
                 {warnings?.end_time ? (
