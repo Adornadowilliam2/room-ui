@@ -283,6 +283,7 @@ function Home() {
                 user={user}
                 cookies={cookies}
                 store={store}
+                isSmallScreen={isSmallScreen}
               />
             </CSSTransition>
             {/* Rooms Section */}
@@ -293,7 +294,7 @@ function Home() {
               unmountOnExit
               in={selectedSidebar === "Rooms"}
             >
-              <Roompage/>
+              <Roompage rooms={rooms} retrieve={retrieve} user={user}/>
             </CSSTransition>
             {/* Subjects Section */}
             <CSSTransition
@@ -307,6 +308,7 @@ function Home() {
                 cookies={cookies}
                 retrieve={retrieve}
                 subjects={subjects}
+                user={user}
               />
             </CSSTransition>
 
@@ -322,6 +324,7 @@ function Home() {
                 cookies={cookies}
                 retrieve={retrieve}
                 roomTypes={roomTypes}
+                user={user}
               />
             </CSSTransition>
 
@@ -337,6 +340,7 @@ function Home() {
                 cookies={cookies}
                 retrieve={retrieve}
                 sections={sections}
+                user={user}
               />
             </CSSTransition>
           </Box>

@@ -23,7 +23,7 @@ import { toast } from "react-toastify";
 import { deleteSubject, storeSubject, updateSubject } from "../api/subject";
 import { deleteSection, storeSection, updateSection } from "../api/section";
 
-export default function Sectionpage({ sections, retrieve, cookies }) {
+export default function Sectionpage({ sections, retrieve, cookie, user }) {
   const [sectionName, setSectionName] = useState("");
   const contentRef = useRef(null);
   const [sectionType, setSectionType] = useState("");
@@ -119,7 +119,11 @@ export default function Sectionpage({ sections, retrieve, cookies }) {
               <TableCell>Name</TableCell>
               <TableCell>Created At</TableCell>
               <TableCell>Modified At</TableCell>
-              <TableCell>Actions</TableCell>
+              {
+                user?.role == "admin" ? (
+                  <TableCell>Actions</TableCell>
+                ): null
+              }
             </TableRow>
           </TableHead>
           <TableBody>
@@ -130,25 +134,29 @@ export default function Sectionpage({ sections, retrieve, cookies }) {
                 </TableCell>
                 <TableCell>{subject.created_at.slice(0, 10)}</TableCell>
                 <TableCell>{subject.updated_at.slice(0, 10)}</TableCell>
-                <TableCell>
-                  <Button
-                    variant="contained"
-                    color="warning"
-                    onClick={() => {
-                      setEditDialog(subject);
-                    }}
-                    sx={{ mr: 2 }}
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    variant="contained"
-                    color="error"
-                    onClick={() => setDeleteDialog(subject.id)}
-                  >
-                    Delete
-                  </Button>
-                </TableCell>
+                {
+                  user?.role == "admin" ? (
+                    <TableCell>
+                    <Button
+                      variant="contained"
+                      color="warning"
+                      onClick={() => {
+                        setEditDialog(subject);
+                      }}
+                      sx={{ mr: 2 }}
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      variant="contained"
+                      color="error"
+                      onClick={() => setDeleteDialog(subject.id)}
+                    >
+                      Delete
+                    </Button>
+                  </TableCell>
+                  ): null
+                }
               </TableRow>
             ))}
           </TableBody>
@@ -212,21 +220,21 @@ export default function Sectionpage({ sections, retrieve, cookies }) {
           />
         </DialogContent>
         <DialogActions>
-          <Button
-            onClick={() => setEditDialog(null)}
-            color="primary"
-            variant="contained"
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={() => handleEditSection(editDialog?.id)}
-            color="warning"
-            variant="contained"
-          >
-            Edit
-          </Button>
-        </DialogActions>
+              <Button
+                onClick={() => setEditDialog(null)}
+                color="primary"
+                variant="contained"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={() => handleEditSection(editDialog?.id)}
+                color="warning"
+                variant="contained"
+              >
+                Edit
+              </Button>
+            </DialogActions>
       </Dialog>
     </Container>
   );

@@ -45,6 +45,7 @@ function Bookingpage({
   store,
   cookies,
   user,
+  isSmallScreen
 }) {
   const [selectedSection, setSelectedSection] = useState(""); // Track
   const [warnings, setWarnings] = useState({});
@@ -459,7 +460,9 @@ function Bookingpage({
                 <TableCell>Book From</TableCell>
                 <TableCell>Book Until</TableCell>
                 <TableCell>Status</TableCell>
-                <TableCell>Actions</TableCell>
+                {user?.role == "admin" ? (
+                  <TableCell>Action</TableCell>
+                ):null}
               </TableRow>
             </TableHead>
             <TableBody>
@@ -480,9 +483,25 @@ function Bookingpage({
                     </TableCell>
                     <TableCell>{booking?.book_from}</TableCell>
                     <TableCell>{booking?.book_until}</TableCell>
-                    <TableCell>{booking?.status}</TableCell>
-                    <TableCell>
-                      <Button
+                    <TableCell   style={{
+                      background:
+                        booking.status === "confirmed"
+                          ? "#72A98F"
+                          : booking.status === "pending"
+                          ? "orange"
+                          : booking.status === "rejected"
+                          ? "red"
+                          : "black",
+                      p: isSmallScreen ? 0 : 2,
+                      border: isSmallScreen && "1px solid black",
+                      borderRadius: "10px",
+                      color:"black",
+                      fontWeight:"bold", textAlign:"center"
+                    }}>{booking?.status}</TableCell>
+                 
+                    {user?.role == "admin" ? (
+                         <TableCell>
+                        <Button
                         onClick={() => setEditDialog(booking)}
                         color="warning"
                         variant="contained"
@@ -497,7 +516,9 @@ function Bookingpage({
                       >
                         Delete
                       </Button>
-                    </TableCell>
+                       </TableCell>
+                    ): null}
+                   
                   </TableRow>
                 )
               )}

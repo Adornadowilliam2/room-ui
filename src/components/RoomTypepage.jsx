@@ -24,7 +24,7 @@ import {
 } from "../api/roomtype";
 import { toast } from "react-toastify";
 
-export default function RoomTypepage({ roomTypes, cookies, retrieve }) {
+export default function RoomTypepage({ roomTypes, cookies, retrieve, user }) {
   const [roomTypeName, setRoomTypeName] = useState("");
   const contentRef = useRef(null);
   const [warnings, setWarnings] = useState({});
@@ -108,7 +108,11 @@ export default function RoomTypepage({ roomTypes, cookies, retrieve }) {
               <TableCell>Name</TableCell>
               <TableCell>Created At</TableCell>
               <TableCell>Modified At</TableCell>
-              <TableCell>Actions</TableCell>
+              {
+                user?.role === "Admin" ? (
+                  <TableCell>Actions</TableCell>
+                ): null
+              }
             </TableRow>
           </TableHead>
           <TableBody>
@@ -119,25 +123,29 @@ export default function RoomTypepage({ roomTypes, cookies, retrieve }) {
                 </TableCell>
                 <TableCell>{roomType.created_at.slice(0, 10)}</TableCell>
                 <TableCell>{roomType.updated_at.slice(0, 10)}</TableCell>
-                <TableCell>
-                  <Button
-                    variant="contained"
-                    color="warning"
-                    onClick={() => {
-                      setEditDialog(roomType);
-                    }}
-                    sx={{ mr: 2 }}
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    variant="contained"
-                    color="error"
-                    onClick={() => setDeleteDialog(roomType.id)}
-                  >
-                    Delete
-                  </Button>
-                </TableCell>
+                {
+                  user?.role === "Admin" ? (
+                    <TableCell>
+                    <Button
+                      variant="contained"
+                      color="warning"
+                      onClick={() => {
+                        setEditDialog(roomType);
+                      }}
+                      sx={{ mr: 2 }}
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      variant="contained"
+                      color="error"
+                      onClick={() => setDeleteDialog(roomType.id)}
+                    >
+                      Delete
+                    </Button>
+                  </TableCell>
+                  ): null
+                }
               </TableRow>
             ))}
           </TableBody>

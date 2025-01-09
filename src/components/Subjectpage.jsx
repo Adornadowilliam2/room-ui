@@ -21,7 +21,7 @@ import "react-calendar/dist/Calendar.css";
 import { toast } from "react-toastify";
 import { deleteSubject, storeSubject, updateSubject } from "../api/subject";
 
-export default function Subjectpage({ retrieve, cookies, subjects }) {
+export default function Subjectpage({ retrieve, cookies, subjects, user }) {
   const [subjectName, setSubjectName] = useState("");
   const contentRef = useRef(null);
   const [subjectType, setSubjectType] = useState("");
@@ -125,7 +125,11 @@ export default function Subjectpage({ retrieve, cookies, subjects }) {
               <TableCell>Type</TableCell>
               <TableCell>Created At</TableCell>
               <TableCell>Modified At</TableCell>
-              <TableCell>Actions</TableCell>
+              {
+                user?.role == "admin" ? (
+                  <TableCell>Actions</TableCell>
+                ): null
+              }
             </TableRow>
           </TableHead>
           <TableBody>
@@ -137,26 +141,30 @@ export default function Subjectpage({ retrieve, cookies, subjects }) {
                 <TableCell>{subject.subject_type}</TableCell>
                 <TableCell>{subject.created_at.slice(0, 10)}</TableCell>
                 <TableCell>{subject.updated_at.slice(0, 10)}</TableCell>
-                <TableCell>
-                  <Button
-                    variant="contained"
-                    color="warning"
-                    sx={{ mr: 1 }}
-                    onClick={() => {
-                      setEditDialog(subject);
-                    }}
-                  >
-                    Edit
-                  </Button>
-
-                  <Button
-                    variant="contained"
-                    color="error"
-                    onClick={() => setDeleteDialog(subject.id)}
-                  >
-                    Delete
-                  </Button>
-                </TableCell>
+                {
+                  user?.role == "admin" ? (
+                    <TableCell>
+                    <Button
+                      variant="contained"
+                      color="warning"
+                      sx={{ mr: 1 }}
+                      onClick={() => {
+                        setEditDialog(subject);
+                      }}
+                    >
+                      Edit
+                    </Button>
+  
+                    <Button
+                      variant="contained"
+                      color="error"
+                      onClick={() => setDeleteDialog(subject.id)}
+                    >
+                      Delete
+                    </Button>
+                  </TableCell>
+                  ): null
+                }
               </TableRow>
             ))}
           </TableBody>

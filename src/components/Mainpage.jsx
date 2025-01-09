@@ -672,9 +672,9 @@ export default function Mainpage({
                   </TableCell>
                   <TableCell
                     style={{
-                      color:
+                      background:
                         booking.status === "confirmed"
-                          ? "green"
+                          ? "#72A98F"
                           : booking.status === "pending"
                           ? "orange"
                           : booking.status === "rejected"
@@ -682,6 +682,9 @@ export default function Mainpage({
                           : "black",
                       p: isSmallScreen ? 0 : 2,
                       border: isSmallScreen && "1px solid black",
+                      borderRadius: "10px",
+                      color:"black",
+                      fontWeight:"bold",  textAlign:"center"
                     }}
                   >
                     {isSmallScreen ? "*" : booking?.status}
