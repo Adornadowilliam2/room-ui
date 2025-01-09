@@ -207,6 +207,7 @@ function Home() {
             handleLogout={handleLogout}
             isSmallScreen={isSmallScreen}
             setOpen={setOpen}
+            selectedSidebar={selectedSidebar}
           />
           {/* Main Content */}
           <Box
@@ -309,6 +310,7 @@ function Home() {
                 retrieve={retrieve}
                 subjects={subjects}
                 user={user}
+                isSmallScreen={isSmallScreen}
               />
             </CSSTransition>
 

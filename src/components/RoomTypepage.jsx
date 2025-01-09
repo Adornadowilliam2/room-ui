@@ -109,7 +109,7 @@ export default function RoomTypepage({ roomTypes, cookies, retrieve, user }) {
               <TableCell>Created At</TableCell>
               <TableCell>Modified At</TableCell>
               {
-                user?.role === "Admin" ? (
+                user?.role === "admin" ? (
                   <TableCell>Actions</TableCell>
                 ): null
               }
@@ -124,7 +124,7 @@ export default function RoomTypepage({ roomTypes, cookies, retrieve, user }) {
                 <TableCell>{roomType.created_at.slice(0, 10)}</TableCell>
                 <TableCell>{roomType.updated_at.slice(0, 10)}</TableCell>
                 {
-                  user?.role === "Admin" ? (
+                  user?.role === "admin" ? (
                     <TableCell>
                     <Button
                       variant="contained"
@@ -132,7 +132,7 @@ export default function RoomTypepage({ roomTypes, cookies, retrieve, user }) {
                       onClick={() => {
                         setEditDialog(roomType);
                       }}
-                      sx={{ mr: 2 }}
+                      sx={{ mr: 2, mb:2 }}
                     >
                       Edit
                     </Button>

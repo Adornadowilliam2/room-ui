@@ -21,7 +21,7 @@ import "react-calendar/dist/Calendar.css";
 import { toast } from "react-toastify";
 import { deleteSubject, storeSubject, updateSubject } from "../api/subject";
 
-export default function Subjectpage({ retrieve, cookies, subjects, user }) {
+export default function Subjectpage({ retrieve, cookies, subjects, user, isSmallScreen }) {
   const [subjectName, setSubjectName] = useState("");
   const contentRef = useRef(null);
   const [subjectType, setSubjectType] = useState("");
@@ -147,7 +147,7 @@ export default function Subjectpage({ retrieve, cookies, subjects, user }) {
                     <Button
                       variant="contained"
                       color="warning"
-                      sx={{ mr: 1 }}
+                      sx={{ mr: 2, mb:2 }}
                       onClick={() => {
                         setEditDialog(subject);
                       }}
@@ -224,7 +224,7 @@ export default function Subjectpage({ retrieve, cookies, subjects, user }) {
       <Dialog open={!!deleteDialog}>
         <DialogTitle>Delete Subject</DialogTitle>
         <DialogContent>
-          Are you sure you want to delete this subject? This action cannot be
+          Are you sure you want to delete this subject? <br /> This action cannot be
           undone.
         </DialogContent>
         <DialogActions>
