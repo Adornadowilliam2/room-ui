@@ -295,7 +295,7 @@ function Home() {
               unmountOnExit
               in={selectedSidebar === "Rooms"}
             >
-              <Roompage rooms={rooms} retrieve={retrieve} user={user}/>
+              <Roompage rooms={rooms} cookies={cookies} retrieve={retrieve} user={user}            roomTypes={roomTypes}/>
             </CSSTransition>
             {/* Subjects Section */}
             <CSSTransition
@@ -327,6 +327,8 @@ function Home() {
                 retrieve={retrieve}
                 roomTypes={roomTypes}
                 user={user}
+        
+           
               />
             </CSSTransition>
 
