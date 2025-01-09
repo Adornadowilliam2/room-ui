@@ -10,11 +10,13 @@ import {
   Select,
   TextField,
   Typography,
+  FormControl,
+  InputLabel
 } from "@mui/material";
 import React, { useRef, useState } from "react";
-import { deleteRoom, updateRoom } from "../api/room";
+import { deleteRoom, updateRoom, storeRoom } from "../api/room";
 import { toast } from "react-toastify";
-
+import $ from "jquery";
 export default function Roompage({
   rooms,
   user,
@@ -41,6 +43,7 @@ export default function Roompage({
   };
 
   const handleEditRoom = (id) => {
+    const form = new FormData();
     const body = {
       room_name: editDialog?.room_name,
       room_type_id: editDialog?.room_type_id,
@@ -58,6 +61,31 @@ export default function Roompage({
       }
     });
   };
+  
+  const [roomTypeId, setRoomTypeId] = useState(null);
+  const handleAddRoom = (e) => {
+    e.preventDefault();
+    const body = new FormData();
+    body.append("room_name", $("#room_name").val());
+    body.append("capacity", $("#capacity").val());
+    body.append("room_type_id", roomTypeId);
+    body.append("location", $("#location").val());
+    body.append("description", $("#description").val());
+    body.append("image", $("#image").get(0).files[0]);
+
+    storeRoom(body, cookies.AUTH_TOKEN).then((res) => {
+      console.log(res);
+      if (res?.ok) {
+        toast.success(res?.message);
+        setAddDialog(false);
+        retrieve();
+      } else {
+        toast.error(res?.message);
+      }
+
+    });
+
+  }
   return (
     <Container ref={contentRef}>
       <Box>
@@ -70,7 +98,7 @@ export default function Roompage({
           Add Rooms
         </Button>
       </Box>
-      <Dialog open={!!addDialog}>
+      <Dialog open={!!addDialog} component="form" onSubmit={handleAddRoom}>
         <DialogTitle>Add Room</DialogTitle>
         <DialogContent>
           <TextField
@@ -78,40 +106,62 @@ export default function Roompage({
             label="Room Name"
             variant="outlined"
             fullWidth
+            id="room_name"
           />
-          <Select value="" sx={{ mt: 2 }} displayEmpty fullWidth>
-            <MenuItem value="">Select a RoomType</MenuItem>
+          <FormControl fullWidth ullWidth sx={{ marginTop: 2 }}>
+            <InputLabel id="room-type-label">Room Type</InputLabel>
+            <Select value={roomTypeId} displayEmpty fullWidth onChange={(e) => setRoomTypeId(e.target.value)}>
+            {roomTypes.map((roomType) => (
+              <MenuItem value={roomType.id} key={roomType.id}>
+                {roomType.room_type}
+              </MenuItem>
+            ))}
           </Select>
+          </FormControl>
           <TextField
             sx={{ mt: 2 }}
             label="Location"
             variant="outlined"
             fullWidth
+            id="location"
           />
           <TextField
             sx={{ mt: 2 }}
             label="Description"
             variant="outlined"
+            id="description"
             fullWidth
           />
           <TextField
             sx={{ mt: 2 }}
             label="Capacity"
+            id="capacity"
             variant="outlined"
             fullWidth
           />
-          <Box></Box>
+          <Box>
+            <TextField
+              sx={{ mt: 2 }}
+              variant="outlined"
+              fullWidth
+              type="file"
+              id="image"
+              />
+          </Box>
         </DialogContent>
         <DialogActions>
-          <Button variant="contained" color="info">
-            Create
-          </Button>
+        
           <Button
             variant="contained"
-            color="error"
-            onClick={() => setAddDialog(false)}
+            color="info"
+            onClick={() => {setAddDialog(false)
+              setRoomTypeId(null)
+            }}
           >
             Cancel
+          </Button>
+          <Button variant="contained" color="success" type="submit">
+            Create
           </Button>
         </DialogActions>
       </Dialog>
@@ -130,7 +180,7 @@ export default function Roompage({
                 room.image || "https://mfi-cyan.vercel.app/Copy%20of%204.png"
               }
               alt="No image"
-              style={{ width: "300px" }}
+              style={{ width: "300px", height: "200px", objectFit: "cover" }}
             />
             <Typography sx={{ fontWeight: "bold", fontSize: "18px" }}>
               {room.room_name}

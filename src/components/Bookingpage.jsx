@@ -412,6 +412,7 @@ function Bookingpage({
                   InputLabelProps={{
                     shrink: true,
                   }}
+               
                 />
                 {warnings?.book_from ? (
                   <FormHelperText error>{warnings.book_from}</FormHelperText>
@@ -694,6 +695,7 @@ function Bookingpage({
             value={editDialog?.book_from}
             fullWidth
             sx={{ marginTop: 2 }}
+               type="date"
           />
 
           <TextField
@@ -702,6 +704,7 @@ function Bookingpage({
             value={editDialog?.book_until}
             fullWidth
             sx={{ marginTop: 2 }}
+               type="date"
           />
 
           <FormControl fullWidth sx={{ marginTop: 2 }}>
