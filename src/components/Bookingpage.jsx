@@ -249,7 +249,7 @@ function Bookingpage({
         <Container>
           <Calendar tileContent={tileContent} />
         </Container>
-        <Container sx={{ maxWidth: 500 }}>
+        <Container sx={{ maxWidth: 400 }}>
           <Typography variant="h6">Create New Booking</Typography>
           <Divider sx={{ marginBottom: 2 }} />
           <Box component="form" onSubmit={handleAddBooking}>
@@ -323,11 +323,6 @@ function Bookingpage({
                   <MobileTimePicker
                     value={newBooking.startTime}
                     onChange={handleStartTimeChange}
-                    sx={{
-                      '& .MuiInputBase-root': {
-                        width:"300px" 
-                      },
-                    }}
                   />
                 </LocalizationProvider>
                 {warnings?.start_time ? (
@@ -342,11 +337,6 @@ function Bookingpage({
                   <MobileTimePicker
                     value={newBooking.endTime}
                     onChange={handleEndTimeChange}
-                    sx={{
-                      '& .MuiInputBase-root': {
-                        width:"300px" 
-                      },
-                    }}
                   />
                 </LocalizationProvider>
                 {warnings?.end_time ? (
@@ -412,7 +402,6 @@ function Bookingpage({
                   InputLabelProps={{
                     shrink: true,
                   }}
-               
                 />
                 {warnings?.book_from ? (
                   <FormHelperText error>{warnings.book_from}</FormHelperText>
@@ -457,132 +446,47 @@ function Bookingpage({
               ?.section_name
           }
         </Typography>
-          {
-            isSmallScreen ? (
-              <TableContainer component={Paper} sx={{ mt: 2 }}>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell></TableCell> {/* For the arrow column */}
-                    <TableCell>Username</TableCell>
-                    <TableCell>Room</TableCell>
-                    <TableCell>Subject</TableCell>
-                    <TableCell>Section</TableCell>
-                    
-                    {user?.role === "admin" && (
-                      <TableCell>Action</TableCell>
-                    )}
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {(filteredBookings.length > 0 ? filteredBookings : bookings).map((booking) => (
-                    <>
-                      <TableRow key={booking.id}>
+        {isSmallScreen ? (
+          <TableContainer component={Paper} sx={{ mt: 2 }}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell></TableCell> {/* For the arrow column */}
+                  <TableCell>Username</TableCell>
+                  <TableCell>Room</TableCell>
+                  <TableCell>Subject</TableCell>
+                  <TableCell>Section</TableCell>
+                  {user?.role === "admin" && <TableCell>Action</TableCell>}
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {(filteredBookings.length > 0
+                  ? filteredBookings
+                  : bookings
+                ).map((booking) => (
+                  <>
+                    <TableRow key={booking.id}>
+                      <TableCell>
+                        <Button
+                          onClick={() => handleRowToggle(booking.id)}
+                          size="small"
+                          variant="outlined"
+                          sx={{ minWidth: "40px" }}
+                        >
+                          {expandedRows.includes(booking.id) ? (
+                            <ExpandLess />
+                          ) : (
+                            <ExpandMore />
+                          )}
+                        </Button>
+                      </TableCell>
+                      <TableCell>{booking?.users?.name}</TableCell>
+                      <TableCell>{booking?.rooms?.room_name}</TableCell>
+                      <TableCell>{booking?.subjects?.subject_name}</TableCell>
+                      <TableCell>{booking?.sections?.section_name}</TableCell>
+                      {user?.role === "admin" && (
                         <TableCell>
                           <Button
-                            onClick={() => handleRowToggle(booking.id)}
-                            size="small"
-                            variant="outlined"
-                            sx={{ minWidth: '40px' }}
-                          >
-                            {expandedRows.includes(booking.id) ? <ExpandLess /> : <ExpandMore />}
-                          </Button>
-                        </TableCell>
-                        <TableCell>{booking?.users?.name}</TableCell>
-                        <TableCell>{booking?.rooms?.room_name}</TableCell>
-                        <TableCell>{booking?.subjects?.subject_name}</TableCell>
-                        <TableCell>{booking?.sections?.section_name}</TableCell>
-                        {user?.role === "admin" && (
-                          <TableCell>
-                            <Button onClick={() => setEditDialog(booking)} color="warning" variant="contained" sx={{ mr: 1 }}>
-                              Edit
-                            </Button>
-                            <Button onClick={() => setDeleteDialog(booking.id)} color="error" variant="contained">
-                              Delete
-                            </Button>
-                          </TableCell>
-                        )}
-                      </TableRow>
-        
-                      {/* Additional content to be displayed when row is expanded */}
-                      {expandedRows.includes(booking.id) && (
-                        <TableRow>
-                          <TableCell colSpan={5}>
-                            <Table>
-                              <TableBody>
-                                <TableRow>
-                                  <TableCell>Day of Week: {booking?.day_of_week}</TableCell>
-                                  <TableCell>Time: {booking?.start_time.slice(0, 5)} - {booking?.end_time.slice(0, 5)}</TableCell>
-                                  <TableCell>Book From: {booking?.book_from}</TableCell>
-                                  <TableCell>Book Until: {booking?.book_until}</TableCell>
-                                  <TableCell>Status: {booking?.status}</TableCell>
-                                </TableRow>
-                              </TableBody>
-                            </Table>
-                          </TableCell>
-                        </TableRow>
-                      )}
-                    </>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-            ):(
-              <TableContainer component={Paper} sx={{ mt: 2 }}>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Username</TableCell>
-                    <TableCell>Room</TableCell>
-                    <TableCell>Subject</TableCell>
-                    <TableCell>Section</TableCell>
-                    <TableCell>Day of Week</TableCell>
-                    <TableCell>Time</TableCell>
-                    <TableCell>Book From</TableCell>
-                    <TableCell>Book Until</TableCell>
-                    <TableCell>Status</TableCell>
-                    {user?.role == "admin" ? (
-                      <TableCell>Action</TableCell>
-                    ):null}
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {(filteredBookings.length > 0 ? filteredBookings : bookings).map(
-                    (booking) => (
-                      <TableRow key={booking.id}>
-                        <TableCell>
-                          {booking?.id + ".) " + booking?.users?.name}
-                        </TableCell>
-                        <TableCell>{booking?.rooms?.room_name}</TableCell>
-                        <TableCell>{booking?.subjects?.subject_name}</TableCell>
-                        <TableCell>{booking?.sections?.section_name}</TableCell>
-                        <TableCell>{booking?.day_of_week}</TableCell>
-                        <TableCell>
-                          {booking?.start_time.slice(0, 5) +
-                            " - " +
-                            booking?.end_time.slice(0, 5)}
-                        </TableCell>
-                        <TableCell>{booking?.book_from}</TableCell>
-                        <TableCell>{booking?.book_until}</TableCell>
-                        <TableCell   style={{
-                          background:
-                            booking.status === "confirmed"
-                              ? "#72A98F"
-                              : booking.status === "pending"
-                              ? "orange"
-                              : booking.status === "rejected"
-                              ? "red"
-                              : "black",
-                          p: isSmallScreen ? 0 : 2,
-                          border: isSmallScreen && "1px solid black",
-                          borderRadius: "10px",
-                          color:"black",
-                          fontWeight:"bold", textAlign:"center"
-                        }}>{booking?.status}</TableCell>
-                     
-                        {user?.role == "admin" ? (
-                             <TableCell>
-                            <Button
                             onClick={() => setEditDialog(booking)}
                             color="warning"
                             variant="contained"
@@ -597,17 +501,125 @@ function Bookingpage({
                           >
                             Delete
                           </Button>
-                           </TableCell>
-                        ): null}
-                       
+                        </TableCell>
+                      )}
+                    </TableRow>
+
+                    {/* Additional content to be displayed when row is expanded */}
+                    {expandedRows.includes(booking.id) && (
+                      <TableRow>
+                        <TableCell colSpan={5}>
+                          <Table>
+                            <TableBody>
+                              <TableRow>
+                                <TableCell>
+                                  Day of Week: {booking?.day_of_week}
+                                </TableCell>
+                                <TableCell>
+                                  Time: {booking?.start_time.slice(0, 5)} -{" "}
+                                  {booking?.end_time.slice(0, 5)}
+                                </TableCell>
+                                <TableCell>
+                                  Book From: {booking?.book_from}
+                                </TableCell>
+                                <TableCell>
+                                  Book Until: {booking?.book_until}
+                                </TableCell>
+                                <TableCell>Status: {booking?.status}</TableCell>
+                              </TableRow>
+                            </TableBody>
+                          </Table>
+                        </TableCell>
                       </TableRow>
-                    )
-                  )}
-                </TableBody>
-              </Table>
-            </TableContainer>
-            )
-          }
+                    )}
+                  </>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        ) : (
+          <TableContainer component={Paper} sx={{ mt: 2 }}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Username</TableCell>
+                  <TableCell>Room</TableCell>
+                  <TableCell>Subject</TableCell>
+                  <TableCell>Section</TableCell>
+                  <TableCell>Day of Week</TableCell>
+                  <TableCell>Time</TableCell>
+                  <TableCell>Book From</TableCell>
+                  <TableCell>Book Until</TableCell>
+                  <TableCell>Status</TableCell>
+                  {user?.role == "admin" ? <TableCell>Action</TableCell> : null}
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {(filteredBookings.length > 0
+                  ? filteredBookings
+                  : bookings
+                ).map((booking) => (
+                  <TableRow key={booking.id}>
+                    <TableCell>
+                      {booking?.id + ".) " + booking?.users?.name}
+                    </TableCell>
+                    <TableCell>{booking?.rooms?.room_name}</TableCell>
+                    <TableCell>{booking?.subjects?.subject_name}</TableCell>
+                    <TableCell>{booking?.sections?.section_name}</TableCell>
+                    <TableCell>{booking?.day_of_week}</TableCell>
+                    <TableCell>
+                      {booking?.start_time.slice(0, 5) +
+                        " - " +
+                        booking?.end_time.slice(0, 5)}
+                    </TableCell>
+                    <TableCell>{booking?.book_from}</TableCell>
+                    <TableCell>{booking?.book_until}</TableCell>
+                    <TableCell
+                      style={{
+                        background:
+                          booking.status === "confirmed"
+                            ? "#72A98F"
+                            : booking.status === "pending"
+                            ? "orange"
+                            : booking.status === "rejected"
+                            ? "red"
+                            : "black",
+                        p: isSmallScreen ? 0 : 2,
+                        border: isSmallScreen && "1px solid black",
+                        borderRadius: "10px",
+                        color: "black",
+                        fontWeight: "bold",
+                        textAlign: "center",
+                      }}
+                    >
+                      {booking?.status}
+                    </TableCell>
+
+                    {user?.role == "admin" ? (
+                      <TableCell>
+                        <Button
+                          onClick={() => setEditDialog(booking)}
+                          color="warning"
+                          variant="contained"
+                          sx={{ mr: 1 }}
+                        >
+                          Edit
+                        </Button>
+                        <Button
+                          onClick={() => setDeleteDialog(booking.id)}
+                          color="error"
+                          variant="contained"
+                        >
+                          Delete
+                        </Button>
+                      </TableCell>
+                    ) : null}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
       </Box>
       <Dialog open={!!deleteDialog}>
         <DialogTitle>Confirm Delete</DialogTitle>
@@ -695,7 +707,7 @@ function Bookingpage({
             value={editDialog?.book_from}
             fullWidth
             sx={{ marginTop: 2 }}
-               type="date"
+            type="date"
           />
 
           <TextField
@@ -704,7 +716,7 @@ function Bookingpage({
             value={editDialog?.book_until}
             fullWidth
             sx={{ marginTop: 2 }}
-               type="date"
+            type="date"
           />
 
           <FormControl fullWidth sx={{ marginTop: 2 }}>

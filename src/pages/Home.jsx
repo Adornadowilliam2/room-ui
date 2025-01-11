@@ -144,28 +144,11 @@ function Home() {
     });
   };
 
-  const contentRef = useRef(null); // Create a ref for content
+  const contentRef = useRef(null);
 
   const [subjectType, setSubjectType] = useState("");
   const [warnings, setWarnings] = useState({});
-  const handleAddRoomType = (e) => {
-    e.preventDefault();
-    const body = {
-      room_type: roomTypeName,
-    };
 
-    storeRoomType(body, cookies.AUTH_TOKEN).then((res) => {
-      if (res?.ok) {
-        toast.success(res.message);
-        retrieve();
-        setRoomTypeName("");
-        setWarnings({});
-      } else {
-        toast.error(res.message);
-        setWarnings(res?.errors);
-      }
-    });
-  };
   const [editDialog, setEditDialog] = useState(null);
   const [deleteDialog, setDeleteDialog] = useState(null);
 
@@ -199,7 +182,7 @@ function Home() {
   return (
     <>
       {user ? (
-        <Box sx={{ display: "flex" }}>
+        <Box sx={{ display: "flex", padding: 0, margin: 0 }}>
           {/* Sidebar (Drawer) */}
           <Sidebar
             open={open}
@@ -295,7 +278,13 @@ function Home() {
               unmountOnExit
               in={selectedSidebar === "Rooms"}
             >
-              <Roompage rooms={rooms} cookies={cookies} retrieve={retrieve} user={user}            roomTypes={roomTypes}/>
+              <Roompage
+                rooms={rooms}
+                cookies={cookies}
+                retrieve={retrieve}
+                user={user}
+                roomTypes={roomTypes}
+              />
             </CSSTransition>
             {/* Subjects Section */}
             <CSSTransition
@@ -327,8 +316,6 @@ function Home() {
                 retrieve={retrieve}
                 roomTypes={roomTypes}
                 user={user}
-        
-           
               />
             </CSSTransition>
 

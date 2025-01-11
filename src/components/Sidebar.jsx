@@ -7,15 +7,15 @@
     isSmallScreen,
     handleLogout,
     setOpen,
-    selectedSidebar, // Add this prop to receive the selected section
+    selectedSidebar,
   }) {
     return (
       <Drawer
         sx={{
-          width: 240,
+          width: 200,
           flexShrink: 0,
           "& .MuiDrawer-paper": {
-            width: 240,
+            width: 200,
             boxSizing: "border-box",
           },
         }}
@@ -38,10 +38,14 @@
             </ListItem>
           ) : null}
           <ListItem
-            onClick={() => handleSidebarClick("Dashboard")}
+            onClick={() => {
+              setOpen(false);
+              handleSidebarClick("Dashboard");
+            }}
             sx={{
               cursor: "pointer",
-              backgroundColor: selectedSidebar === "Dashboard" ? "gray" : "transparent", // Highlight when selected
+              backgroundColor:
+                selectedSidebar === "Dashboard" ? "gray" : "transparent", // Highlight when selected
             }}
             button="true"
           >
@@ -50,48 +54,68 @@
           <ListItem
             sx={{
               cursor: "pointer",
-              backgroundColor: selectedSidebar === "Bookings" ? "gray" : "transparent", // Highlight when selected
+              backgroundColor:
+                selectedSidebar === "Bookings" ? "gray" : "transparent", // Highlight when selected
             }}
             button="true"
-            onClick={() => handleSidebarClick("Bookings")}
+            onClick={() => {
+              handleSidebarClick("Bookings");
+              setOpen(false);
+            }}
           >
             <ListItemText primary="Bookings" />
           </ListItem>
           <ListItem
             sx={{
               cursor: "pointer",
-              backgroundColor: selectedSidebar === "Rooms" ? "gray" : "transparent", // Highlight when selected
+              backgroundColor:
+                selectedSidebar === "Rooms" ? "gray" : "transparent", // Highlight when selected
             }}
             button="true"
-            onClick={() => handleSidebarClick("Rooms")}
+            onClick={() => {
+              handleSidebarClick("Rooms");
+              setOpen(false);
+            }}
           >
             <ListItemText primary="Rooms" />
           </ListItem>
           <ListItem
-            onClick={() => handleSidebarClick("Subjects")}
+            onClick={() => {
+              handleSidebarClick("Subjects");
+              setOpen(false);
+            }}
             sx={{
               cursor: "pointer",
-              backgroundColor: selectedSidebar === "Subjects" ? "gray" : "transparent", // Highlight when selected
+              backgroundColor:
+                selectedSidebar === "Subjects" ? "gray" : "transparent", // Highlight when selected
             }}
             button="true"
           >
             <ListItemText primary="Subjects" />
           </ListItem>
           <ListItem
-            onClick={() => handleSidebarClick("Room Types")}
+            onClick={() => {
+              handleSidebarClick("Room Types");
+              setOpen(false);
+            }}
             sx={{
               cursor: "pointer",
-              backgroundColor: selectedSidebar === "Room Types" ? "gray" : "transparent", // Highlight when selected
+              backgroundColor:
+                selectedSidebar === "Room Types" ? "gray" : "transparent", // Highlight when selected
             }}
             button="true"
           >
             <ListItemText primary="Room Types" />
           </ListItem>
           <ListItem
-            onClick={() => handleSidebarClick("Sections")}
+            onClick={() => {
+              setOpen(false);
+              handleSidebarClick("Sections");
+            }}
             sx={{
               cursor: "pointer",
-              backgroundColor: selectedSidebar === "Sections" ? "gray" : "transparent", // Highlight when selected
+              backgroundColor:
+                selectedSidebar === "Sections" ? "gray" : "transparent", // Highlight when selected
             }}
             button="true"
           >
@@ -101,7 +125,8 @@
             onClick={() => handleLogout()}
             sx={{
               cursor: "pointer",
-              backgroundColor: selectedSidebar === "Logout" ? "gray" : "transparent", // Highlight when selected
+              backgroundColor:
+                selectedSidebar === "Logout" ? "gray" : "transparent", // Highlight when selected
             }}
             button="true"
           >

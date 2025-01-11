@@ -287,9 +287,8 @@ export default function Mainpage({
         {/* Room Management Panel */}
         <Container
           sx={{
-            width: isSmallScreen ? "400px" : "100%",
+            width: isSmallScreen ? "400px" : "400px",
             border: isSmallScreen ? "1px solid black" : "none",
-            p: isSmallScreen ? 2 : 0,
           }}
         >
           <Typography variant="h6">Create New Booking</Typography>
@@ -365,17 +364,12 @@ export default function Mainpage({
               </Box>
 
               {/* Start Time */}
-              <Box >
+              <Box>
                 <InputLabel>Start Time</InputLabel>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <MobileTimePicker
                     value={newBooking.startTime}
                     onChange={handleStartTimeChange}
-                    sx={{
-                      '& .MuiInputBase-root': {
-                        width:"250px" 
-                      },
-                    }}
                   />
                 </LocalizationProvider>
                 {warnings?.start_time ? (
@@ -390,11 +384,6 @@ export default function Mainpage({
                   <MobileTimePicker
                     value={newBooking.endTime}
                     onChange={handleEndTimeChange}
-                    sx={{
-                      '& .MuiInputBase-root': {
-                        width:"250px" 
-                      },
-                    }}
                   />
                 </LocalizationProvider>
                 {warnings?.end_time ? (
@@ -683,8 +672,9 @@ export default function Mainpage({
                       p: isSmallScreen ? 0 : 2,
                       border: isSmallScreen && "1px solid black",
                       borderRadius: "10px",
-                      color:"black",
-                      fontWeight:"bold",  textAlign:"center"
+                      color: "black",
+                      fontWeight: "bold",
+                      textAlign: "center",
                     }}
                   >
                     {isSmallScreen ? "*" : booking?.status}
