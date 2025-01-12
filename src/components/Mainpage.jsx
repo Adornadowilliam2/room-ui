@@ -195,8 +195,7 @@ export default function Mainpage({
     });
   };
   return (
-    <Container ref={contentRef}>
-      {/* container for calendar and add booking form */}
+    <Container sx={{ marginTop: 4 }} ref={contentRef}>
       <Box
         sx={{
           display: "flex",
@@ -288,7 +287,6 @@ export default function Mainpage({
         <Container
           sx={{
             width: isSmallScreen ? "400px" : "400px",
-            border: isSmallScreen ? "1px solid black" : "none",
           }}
         >
           <Typography variant="h6">Create New Booking</Typography>
@@ -504,187 +502,134 @@ export default function Mainpage({
           </Select>
         </FormControl>
       </Container>
-
-      {/* Table for Bookings */}
-      <Container sx={{ marginTop: 4 }}>
-        <h2>Recents</h2>
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell
-                  sx={{
-                    p: isSmallScreen ? 0 : 2,
-                    border: isSmallScreen && "1px solid black",
-                  }}
-                >
-                  {isSmallScreen ? "User" : "User Name"}
-                </TableCell>
-                <TableCell
-                  sx={{
-                    p: isSmallScreen ? 0 : 2,
-                    border: isSmallScreen && "1px solid black",
-                  }}
-                >
-                  Room Name
-                </TableCell>
-                <TableCell
-                  sx={{
-                    p: isSmallScreen ? 0 : 2,
-                    border: isSmallScreen && "1px solid black",
-                  }}
-                >
-                  Day of the Week
-                </TableCell>
-                <TableCell
-                  sx={{
-                    p: isSmallScreen ? 0 : 2,
-                    border: isSmallScreen && "1px solid black",
-                  }}
-                >
-                  Time
-                </TableCell>
-                <TableCell
-                  sx={{
-                    p: isSmallScreen ? 0 : 2,
-                    border: isSmallScreen && "1px solid black",
-                  }}
-                >
-                  {isSmallScreen ? "Sub" : " Subject"}
-                </TableCell>
-                <TableCell
-                  sx={{
-                    p: isSmallScreen ? 0 : 2,
-                    border: isSmallScreen && "1px solid black",
-                  }}
-                >
-                  {isSmallScreen ? "Sec" : "Section"}
-                </TableCell>
-                <TableCell
-                  sx={{
-                    p: isSmallScreen ? 0 : 2,
-                    border: isSmallScreen && "1px solid black",
-                  }}
-                >
-                  Book From
-                </TableCell>
-                <TableCell
-                  sx={{
-                    p: isSmallScreen ? 0 : 2,
-                    border: isSmallScreen && "1px solid black",
-                  }}
-                >
-                  Book Until
-                </TableCell>
-                <TableCell
-                  sx={{
-                    p: isSmallScreen ? 0 : 2,
-                    border: isSmallScreen && "1px solid black",
-                  }}
-                >
-                  Status
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {filteredBookings.map((booking) => (
+      <h2>Recents</h2>
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell
+                sx={{
+                  p: isSmallScreen ? 1 : 2,
+                  border: "1px solid black",
+                }}
+              >
+                More Info Click Here
+              </TableCell>
+              <TableCell
+                sx={{
+                  p: isSmallScreen ? 1 : 2,
+                  border: "1px solid black",
+                }}
+              >
+                Username
+              </TableCell>
+              <TableCell
+                sx={{
+                  p: isSmallScreen ? 1 : 2,
+                  border: "1px solid black",
+                }}
+              >
+                Room Name
+              </TableCell>
+              <TableCell
+                sx={{
+                  p: isSmallScreen ? 1 : 2,
+                  border: "1px solid black",
+                }}
+              >
+                Actions
+              </TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {bookings.map((booking) => (
+              <>
                 <TableRow key={booking.id}>
                   <TableCell
                     sx={{
-                      p: isSmallScreen ? 0 : 2,
-                      border: isSmallScreen && "1px solid black",
+                      p: isSmallScreen ? 1 : 2,
+                      border: "1px solid black",
+                    }}
+                  >
+                    <Button
+                      onClick={() => handleRowToggle(booking.id)}
+                      size="small"
+                      variant="outlined"
+                      sx={{
+                        minWidth: "40px",
+                        textAlign: "center",
+                      }}
+                    >
+                      {expandedRows.includes(booking.id) ? (
+                        <ExpandLess />
+                      ) : (
+                        <ExpandMore />
+                      )}
+                    </Button>
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      p: isSmallScreen ? 1 : 2,
+                      border: "1px solid black",
                     }}
                   >
                     {booking?.id + ".) " + booking?.users?.name}
                   </TableCell>
                   <TableCell
                     sx={{
-                      p: isSmallScreen ? 0 : 2,
-                      border: isSmallScreen && "1px solid black",
+                      p: isSmallScreen ? 1 : 2,
+                      border: "1px solid black",
                     }}
                   >
                     {booking?.rooms?.room_name}
                   </TableCell>
-                  <TableCell
-                    sx={{
-                      p: isSmallScreen ? 0 : 2,
-                      border: isSmallScreen && "1px solid black",
-                    }}
-                  >
-                    {isSmallScreen
-                      ? booking.day_of_week.slice(0, 3)
-                      : booking.day_of_week}
-                  </TableCell>
-                  <TableCell
-                    sx={{
-                      p: isSmallScreen ? 0 : 2,
-                      border: isSmallScreen && "1px solid black",
-                    }}
-                  >
-                    {booking.start_time.slice(0, 5) +
-                      " - " +
-                      booking.end_time.slice(0, 5)}
-                  </TableCell>
-                  <TableCell
-                    sx={{
-                      p: isSmallScreen ? 0 : 2,
-                      border: isSmallScreen && "1px solid black",
-                    }}
-                  >
-                    {isSmallScreen
-                      ? booking?.subjects?.subject_name.slice(0, 4)
-                      : booking?.subjects?.subject_name}
-                  </TableCell>
-                  <TableCell
-                    sx={{
-                      p: isSmallScreen ? 0 : 2,
-                      border: isSmallScreen && "1px solid black",
-                    }}
-                  >
-                    {booking?.sections?.section_name}
-                  </TableCell>
-                  <TableCell
-                    sx={{
-                      p: isSmallScreen ? 0 : 2,
-                      border: isSmallScreen && "1px solid black",
-                    }}
-                  >
-                    {booking.book_from}
-                  </TableCell>
-                  <TableCell
-                    sx={{
-                      p: isSmallScreen ? 0 : 2,
-                      border: isSmallScreen && "1px solid black",
-                    }}
-                  >
-                    {booking.book_until}
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      background:
-                        booking.status === "confirmed"
-                          ? "#72A98F"
-                          : booking.status === "pending"
-                          ? "orange"
-                          : booking.status === "rejected"
-                          ? "red"
-                          : "black",
-                      p: isSmallScreen ? 0 : 2,
-                      border: isSmallScreen && "1px solid black",
-                      borderRadius: "10px",
-                      color: "black",
-                      fontWeight: "bold",
-                      textAlign: "center",
-                    }}
-                  >
-                    {isSmallScreen ? "*" : booking?.status}
+                  <TableCell sx={{ border: "1px solid black" }}>
+                    <Button
+                      onClick={() => setEditDialog(booking)}
+                      color="warning"
+                      variant="contained"
+                      sx={{ mr: 1 }}
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      onClick={() => setDeleteDialog(booking.id)}
+                      color="error"
+                      variant="contained"
+                    >
+                      Delete
+                    </Button>
                   </TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Container>
+
+                {/* Additional content to be displayed when row is expanded */}
+                {expandedRows.includes(booking.id) && (
+                  <TableRow>
+                    <TableCell colSpan={4}>
+                      <List>
+                        <ListItem>
+                          Subject: {booking?.subjects?.subject_name}
+                        </ListItem>
+                        <ListItem>
+                          Section: {booking?.sections?.section_name}
+                        </ListItem>
+                        <ListItem>Day of Week: {booking?.day_of_week}</ListItem>
+                        <ListItem>
+                          Time: {booking?.start_time.slice(0, 5)} -{" "}
+                          {booking?.end_time.slice(0, 5)}
+                        </ListItem>
+                        <ListItem>Book From: {booking?.book_from}</ListItem>
+                        <ListItem>Book Until: {booking?.book_until}</ListItem>
+                        <ListItem>Status: {booking?.status}</ListItem>
+                      </List>
+                    </TableCell>
+                  </TableRow>
+                )}
+              </>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </Container>
   );
 }
