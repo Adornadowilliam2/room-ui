@@ -18,7 +18,7 @@ import {
   Button,
   Divider,
   Checkbox,
-  Grid,
+  Stack,
   FormHelperText,
   Dialog,
   DialogTitle,
@@ -26,6 +26,8 @@ import {
   DialogActions,
   IconButton,
   Icon,
+  List,
+  ListItem,
 } from "@mui/material";
 import "react-calendar/dist/Calendar.css";
 import dayjs from "dayjs";
@@ -35,7 +37,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { MobileTimePicker } from "@mui/x-date-pickers/MobileTimePicker";
 import { destroy, update } from "../api/booking";
-import { ExpandMore, ExpandLess } from '@mui/icons-material';
+import { ExpandMore, ExpandLess } from "@mui/icons-material";
 
 function Bookingpage({
   bookings,
@@ -46,7 +48,7 @@ function Bookingpage({
   store,
   cookies,
   user,
-  isSmallScreen
+  isSmallScreen,
 }) {
   const [selectedSection, setSelectedSection] = useState(""); // Track
   const [warnings, setWarnings] = useState({});
@@ -55,11 +57,11 @@ function Bookingpage({
   const [expandedRows, setExpandedRows] = useState([]);
 
   const handleRowToggle = (id) => {
-    setExpandedRows((prev) => 
+    setExpandedRows((prev) =>
       prev.includes(id) ? prev.filter((rowId) => rowId !== id) : [...prev, id]
     );
   };
-  
+
   const [newBooking, setNewBooking] = useState({
     roomId: "",
     subjectId: "",
@@ -212,7 +214,19 @@ function Bookingpage({
   };
 
   const contentRef = useRef(null);
+  const convertTo12HourFormat = (time) => {
+    let [hours, minutes] = time.split(":");
+    hours = parseInt(hours);
 
+    // Determine AM or PM
+    const amPm = hours >= 12 ? "PM" : "AM";
+
+    // Convert to 12-hour format
+    hours = hours % 12 || 12;
+
+    // Return the formatted time
+    return `${hours}:${minutes} ${amPm}`;
+  };
   return (
     <Box sx={{ padding: 2 }} ref={contentRef}>
       {/* Section Selector */}
@@ -256,71 +270,67 @@ function Bookingpage({
           <Typography variant="h6">Create New Booking</Typography>
           <Divider sx={{ marginBottom: 2 }} />
           <Box component="form" onSubmit={handleAddBooking}>
-            <Grid container spacing={2}>
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: "1rem",
+              }}
+            >
               {/* Room Name Select */}
-              <Grid item xs={6}>
-                <FormControl fullWidth>
-                  <InputLabel id="room-select-label">Room Name</InputLabel>
-                  <Select
-                    labelId="room-select-label"
-                    name="roomId"
-                    value={newBooking.roomId}
-                    onChange={handleBookingChange}
-                    label="Room Name"
-                  >
-                    {rooms.map((room) => (
-                      <MenuItem key={room.id} value={room.id}>
-                        {room.room_name} (Capacity: {room.capacity})
-                      </MenuItem>
-                    ))}
-                  </Select>
-                  {warnings?.room_id ? (
-                    <FormHelperText error>{warnings.room_id}</FormHelperText>
-                  ) : null}
-                </FormControl>
-              </Grid>
+              <FormControl fullWidth>
+                <InputLabel id="room-select-label">Room Name</InputLabel>
+                <Select
+                  labelId="room-select-label"
+                  name="roomId"
+                  value={newBooking.roomId}
+                  onChange={handleBookingChange}
+                  label="Room Name"
+                >
+                  {rooms.map((room) => (
+                    <MenuItem key={room.id} value={room.id}>
+                      {room.room_name} (Capacity: {room.capacity})
+                    </MenuItem>
+                  ))}
+                </Select>
+                {warnings?.room_id && (
+                  <FormHelperText error>{warnings.room_id}</FormHelperText>
+                )}
+              </FormControl>
 
               {/* Days of the Week */}
-              <Grid item xs={6}>
-                <FormControl fullWidth>
-                  <InputLabel id="days-select-label">
-                    Days of the Week
-                  </InputLabel>
-                  <Select
-                    labelId="days-select-label"
-                    name="daysOfWeek"
-                    multiple
-                    value={newBooking.daysOfWeek}
-                    onChange={handleDaySelection}
-                    renderValue={(selected) => selected.join(", ")}
-                  >
-                    {[
-                      "Monday",
-                      "Tuesday",
-                      "Wednesday",
-                      "Thursday",
-                      "Friday",
-                      "Saturday",
-                      "Sunday",
-                    ].map((day) => (
-                      <MenuItem key={day} value={day}>
-                        <Checkbox
-                          checked={newBooking.daysOfWeek.includes(day)}
-                        />
-                        {day}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                  {warnings?.day_of_week ? (
-                    <FormHelperText error>
-                      {warnings.day_of_week}
-                    </FormHelperText>
-                  ) : null}
-                </FormControl>
-              </Grid>
+              <FormControl fullWidth>
+                <InputLabel id="days-select-label">Days of the Week</InputLabel>
+                <Select
+                  labelId="days-select-label"
+                  name="daysOfWeek"
+                  multiple
+                  value={newBooking.daysOfWeek}
+                  onChange={handleDaySelection}
+                  renderValue={(selected) => selected.join(", ")}
+                >
+                  {[
+                    "Monday",
+                    "Tuesday",
+                    "Wednesday",
+                    "Thursday",
+                    "Friday",
+                    "Saturday",
+                    "Sunday",
+                  ].map((day) => (
+                    <MenuItem key={day} value={day}>
+                      <Checkbox checked={newBooking.daysOfWeek.includes(day)} />
+                      {day}
+                    </MenuItem>
+                  ))}
+                </Select>
+                {warnings?.day_of_week && (
+                  <FormHelperText error>{warnings.day_of_week}</FormHelperText>
+                )}
+              </FormControl>
 
               {/* Start Time */}
-              <Grid item xs={6}>
+              <Box>
                 <InputLabel>Start Time</InputLabel>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <MobileTimePicker
@@ -328,13 +338,13 @@ function Bookingpage({
                     onChange={handleStartTimeChange}
                   />
                 </LocalizationProvider>
-                {warnings?.start_time ? (
+                {warnings?.start_time && (
                   <FormHelperText error>{warnings.start_time}</FormHelperText>
-                ) : null}
-              </Grid>
+                )}
+              </Box>
 
               {/* End Time */}
-              <Grid item xs={6}>
+              <Box>
                 <InputLabel>End Time</InputLabel>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <MobileTimePicker
@@ -342,100 +352,84 @@ function Bookingpage({
                     onChange={handleEndTimeChange}
                   />
                 </LocalizationProvider>
-                {warnings?.end_time ? (
+                {warnings?.end_time && (
                   <FormHelperText error>{warnings.end_time}</FormHelperText>
-                ) : null}
-              </Grid>
+                )}
+              </Box>
 
               {/* Subject Select */}
-              <Grid item xs={6}>
-                <FormControl fullWidth>
-                  <InputLabel id="subject-select-label">Subject</InputLabel>
-                  <Select
-                    labelId="subject-select-label"
-                    name="subjectId"
-                    value={newBooking.subjectId}
-                    onChange={handleBookingChange}
-                    label="Subject"
-                  >
-                    {subjects.map((subject) => (
-                      <MenuItem key={subject.id} value={subject.id}>
-                        {subject.subject_name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                  {warnings?.subject_id ? (
-                    <FormHelperText error>{warnings.subject_id}</FormHelperText>
-                  ) : null}
-                </FormControl>
-              </Grid>
+              <FormControl fullWidth>
+                <InputLabel id="subject-select-label">Subject</InputLabel>
+                <Select
+                  labelId="subject-select-label"
+                  name="subjectId"
+                  value={newBooking.subjectId}
+                  onChange={handleBookingChange}
+                  label="Subject"
+                >
+                  {subjects.map((subject) => (
+                    <MenuItem key={subject.id} value={subject.id}>
+                      {subject.subject_name}
+                    </MenuItem>
+                  ))}
+                </Select>
+                {warnings?.subject_id && (
+                  <FormHelperText error>{warnings.subject_id}</FormHelperText>
+                )}
+              </FormControl>
 
               {/* Section Select */}
-              <Grid item xs={6}>
-                <FormControl fullWidth>
-                  <InputLabel id="section-select-label">Section</InputLabel>
-                  <Select
-                    labelId="section-select-label"
-                    name="sectionId"
-                    value={newBooking.sectionId}
-                    onChange={handleBookingChange}
-                    label="Section"
-                  >
-                    {sections.map((section) => (
-                      <MenuItem key={section.id} value={section.id}>
-                        {section.section_name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                  {warnings?.section_id ? (
-                    <FormHelperText error>{warnings.section_id}</FormHelperText>
-                  ) : null}
-                </FormControl>
-              </Grid>
+              <FormControl fullWidth>
+                <InputLabel id="section-select-label">Section</InputLabel>
+                <Select
+                  labelId="section-select-label"
+                  name="sectionId"
+                  value={newBooking.sectionId}
+                  onChange={handleBookingChange}
+                  label="Section"
+                >
+                  {sections.map((section) => (
+                    <MenuItem key={section.id} value={section.id}>
+                      {section.section_name}
+                    </MenuItem>
+                  ))}
+                </Select>
+                {warnings?.section_id && (
+                  <FormHelperText error>{warnings.section_id}</FormHelperText>
+                )}
+              </FormControl>
 
               {/* Date From */}
-              <Grid item xs={6}>
-                <TextField
-                  label="Date From"
-                  name="date_from"
-                  type="date"
-                  value={newBooking.date_from}
-                  onChange={handleBookingChange}
-                  fullWidth
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                />
-                {warnings?.book_from ? (
-                  <FormHelperText error>{warnings.book_from}</FormHelperText>
-                ) : null}
-              </Grid>
+              <TextField
+                label="Date From"
+                name="date_from"
+                type="date"
+                value={newBooking.date_from}
+                onChange={handleBookingChange}
+                fullWidth
+                InputLabelProps={{ shrink: true }}
+              />
+              {warnings?.book_from && (
+                <FormHelperText error>{warnings.book_from}</FormHelperText>
+              )}
 
               {/* Date Until */}
-              <Grid item xs={6}>
-                <TextField
-                  label="Date Until"
-                  name="date_until"
-                  type="date"
-                  value={newBooking.date_until}
-                  onChange={handleBookingChange}
-                  fullWidth
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                />
-                {warnings?.book_until ? (
-                  <FormHelperText error>{warnings.book_until}</FormHelperText>
-                ) : null}
-              </Grid>
-
-              {/* Submit Button */}
-              <Grid item xs={12}>
-                <Button variant="contained" type="submit" fullWidth>
-                  Add Booking
-                </Button>
-              </Grid>
-            </Grid>
+              <TextField
+                label="Date Until"
+                name="date_until"
+                type="date"
+                value={newBooking.date_until}
+                onChange={handleBookingChange}
+                fullWidth
+                InputLabelProps={{ shrink: true }}
+              />
+              {warnings?.book_until && (
+                <FormHelperText error>{warnings.book_until}</FormHelperText>
+              )}
+            </Box>
+            <Button variant="contained" type="submit" fullWidth sx={{ mt: 2 }}>
+              Add Booking
+            </Button>
           </Box>
         </Container>
       </Box>
@@ -450,41 +444,17 @@ function Bookingpage({
         </Typography>
         {isSmallScreen ? (
           <TableContainer component={Paper}>
-            <Table>
+            <Table
+              sx={{
+                "& .MuiTableCell-root": { p: 1, border: "1px solid black" },
+              }}
+            >
               <TableHead>
                 <TableRow>
-                  <TableCell
-                    sx={{
-                      p: isSmallScreen ? 1 : 2,
-                      border: "1px solid black",
-                    }}
-                  >
-                    More Info Click Here
-                  </TableCell>
-                  <TableCell
-                    sx={{
-                      p: isSmallScreen ? 1 : 2,
-                      border: "1px solid black",
-                    }}
-                  >
-                    Username
-                  </TableCell>
-                  <TableCell
-                    sx={{
-                      p: isSmallScreen ? 1 : 2,
-                      border: "1px solid black",
-                    }}
-                  >
-                    Room Name
-                  </TableCell>
-                  <TableCell
-                    sx={{
-                      p: isSmallScreen ? 1 : 2,
-                      border: "1px solid black",
-                    }}
-                  >
-                    Actions
-                  </TableCell>
+                  <TableCell>More Info Click Here</TableCell>
+                  <TableCell>Username</TableCell>
+                  <TableCell>Room Name</TableCell>
+                  <TableCell>Actions</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -494,12 +464,7 @@ function Bookingpage({
                 ).map((booking) => (
                   <>
                     <TableRow key={booking.id}>
-                      <TableCell
-                        sx={{
-                          p: isSmallScreen ? 1 : 2,
-                          border: "1px solid black",
-                        }}
-                      >
+                      <TableCell>
                         <Button
                           onClick={() => handleRowToggle(booking.id)}
                           size="small"
@@ -516,28 +481,16 @@ function Bookingpage({
                           )}
                         </Button>
                       </TableCell>
-                      <TableCell
-                        sx={{
-                          p: isSmallScreen ? 1 : 2,
-                          border: "1px solid black",
-                        }}
-                      >
+                      <TableCell>
                         {booking?.id + ".) " + booking?.users?.name}
                       </TableCell>
-                      <TableCell
-                        sx={{
-                          p: isSmallScreen ? 1 : 2,
-                          border: "1px solid black",
-                        }}
-                      >
-                        {booking?.rooms?.room_name}
-                      </TableCell>
+                      <TableCell>{booking?.rooms?.room_name}</TableCell>
                       <TableCell sx={{ border: "1px solid black" }}>
                         <Button
                           onClick={() => setEditDialog(booking)}
                           color="warning"
                           variant="contained"
-                          sx={{ mr: 1 }}
+                          sx={{ mr: 1, mb: isSmallScreen ? 1 : 0 }}
                         >
                           Edit
                         </Button>
@@ -566,14 +519,26 @@ function Bookingpage({
                               Day of Week: {booking?.day_of_week}
                             </ListItem>
                             <ListItem>
-                              Time: {booking?.start_time.slice(0, 5)} -{" "}
-                              {booking?.end_time.slice(0, 5)}
+                              Time:{" "}
+                              {convertTo12HourFormat(
+                                booking?.start_time.slice(0, 5)
+                              )}{" "}
+                              -{" "}
+                              {convertTo12HourFormat(
+                                booking?.end_time.slice(0, 5)
+                              )}
                             </ListItem>
                             <ListItem>Book From: {booking?.book_from}</ListItem>
                             <ListItem>
                               Book Until: {booking?.book_until}
                             </ListItem>
                             <ListItem>Status: {booking?.status}</ListItem>
+                            <ListItem>
+                              Created At: {booking?.created_at.slice(0, 10)}
+                            </ListItem>
+                            <ListItem>
+                              Updated At: {booking?.updated_at.slice(0, 10)}
+                            </ListItem>
                           </List>
                         </TableCell>
                       </TableRow>
@@ -585,10 +550,14 @@ function Bookingpage({
           </TableContainer>
         ) : (
           <TableContainer component={Paper} sx={{ mt: 2 }}>
-            <Table>
+            <Table
+              sx={{
+                "& .MuiTableCell-root": { p: 1, border: "1px solid black" },
+              }}
+            >
               <TableHead>
                 <TableRow>
-                  <TableCell>Username</TableCell>
+                  <TableCell sx={{ p: 1 }}>Username</TableCell>
                   <TableCell>Room</TableCell>
                   <TableCell>Subject</TableCell>
                   <TableCell>Section</TableCell>
@@ -597,6 +566,8 @@ function Bookingpage({
                   <TableCell>Book From</TableCell>
                   <TableCell>Book Until</TableCell>
                   <TableCell>Status</TableCell>
+                  <TableCell>Created At</TableCell>
+                  <TableCell>Updated At</TableCell>
 
                   <TableCell>Action</TableCell>
                 </TableRow>
@@ -615,9 +586,8 @@ function Bookingpage({
                     <TableCell>{booking?.sections?.section_name}</TableCell>
                     <TableCell>{booking?.day_of_week}</TableCell>
                     <TableCell>
-                      {booking?.start_time.slice(0, 5) +
-                        " - " +
-                        booking?.end_time.slice(0, 5)}
+                      {convertTo12HourFormat(booking?.start_time.slice(0, 5))} -{" "}
+                      {convertTo12HourFormat(booking?.end_time.slice(0, 5))}
                     </TableCell>
                     <TableCell>{booking?.book_from}</TableCell>
                     <TableCell>{booking?.book_until}</TableCell>
@@ -631,9 +601,8 @@ function Bookingpage({
                             : booking.status === "rejected"
                             ? "red"
                             : "black",
-                        p: isSmallScreen ? 1 : 2,
+                        p: 0,
 
-                        borderRadius: "10px",
                         color: "black",
                         fontWeight: "bold",
                         textAlign: "center",
@@ -641,13 +610,14 @@ function Bookingpage({
                     >
                       {booking?.status}
                     </TableCell>
-
+                    <TableCell>{booking?.created_at.slice(0, 10)}</TableCell>
+                    <TableCell>{booking?.updated_at.slice(0, 10)}</TableCell>
                     <TableCell>
                       <Button
                         onClick={() => setEditDialog(booking)}
                         color="warning"
                         variant="contained"
-                        sx={{ mr: 1 }}
+                        sx={{ mr: 1, mb: 2 }}
                       >
                         Edit
                       </Button>

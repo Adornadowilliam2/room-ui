@@ -23,7 +23,12 @@ import { toast } from "react-toastify";
 import { deleteSubject, storeSubject, updateSubject } from "../api/subject";
 import { deleteSection, storeSection, updateSection } from "../api/section";
 
-export default function Sectionpage({ sections, retrieve, cookie, user }) {
+export default function Sectionpage({
+  sections,
+  retrieve,
+  user,
+  isSmallScreen,
+}) {
   const [sectionName, setSectionName] = useState("");
   const contentRef = useRef(null);
   const [sectionType, setSectionType] = useState("");
@@ -111,19 +116,22 @@ export default function Sectionpage({ sections, retrieve, cookie, user }) {
         Add Section
       </Button>
 
-      {/* Room Types Table */}
+      {/* Sections Table */}
       <TableContainer component={Paper}>
-        <Table>
+        <Table
+          sx={{
+            "& .MuiTableCell-root": {
+              p: isSmallScreen ? 1 : 2,
+              border: "1px solid black",
+            },
+          }}
+        >
           <TableHead>
             <TableRow>
               <TableCell>Name</TableCell>
               <TableCell>Created At</TableCell>
               <TableCell>Modified At</TableCell>
-              {
-                user?.role == "admin" ? (
-                  <TableCell>Actions</TableCell>
-                ): null
-              }
+              {user?.role == "admin" ? <TableCell>Actions</TableCell> : null}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -134,9 +142,8 @@ export default function Sectionpage({ sections, retrieve, cookie, user }) {
                 </TableCell>
                 <TableCell>{subject.created_at.slice(0, 10)}</TableCell>
                 <TableCell>{subject.updated_at.slice(0, 10)}</TableCell>
-                {
-                  user?.role == "admin" ? (
-                    <TableCell>
+                {user?.role == "admin" ? (
+                  <TableCell>
                     <Button
                       variant="contained"
                       color="warning"
@@ -155,8 +162,7 @@ export default function Sectionpage({ sections, retrieve, cookie, user }) {
                       Delete
                     </Button>
                   </TableCell>
-                  ): null
-                }
+                ) : null}
               </TableRow>
             ))}
           </TableBody>
@@ -220,21 +226,21 @@ export default function Sectionpage({ sections, retrieve, cookie, user }) {
           />
         </DialogContent>
         <DialogActions>
-              <Button
-                onClick={() => setEditDialog(null)}
-                color="primary"
-                variant="contained"
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={() => handleEditSection(editDialog?.id)}
-                color="warning"
-                variant="contained"
-              >
-                Edit
-              </Button>
-            </DialogActions>
+          <Button
+            onClick={() => setEditDialog(null)}
+            color="primary"
+            variant="contained"
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={() => handleEditSection(editDialog?.id)}
+            color="warning"
+            variant="contained"
+          >
+            Edit
+          </Button>
+        </DialogActions>
       </Dialog>
     </Container>
   );

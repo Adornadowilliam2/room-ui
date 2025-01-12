@@ -24,7 +24,13 @@ import {
 } from "../api/roomtype";
 import { toast } from "react-toastify";
 
-export default function RoomTypepage({ roomTypes, cookies, retrieve, user }) {
+export default function RoomTypepage({
+  roomTypes,
+  cookies,
+  retrieve,
+  user,
+  isSmallScreen,
+}) {
   const [roomTypeName, setRoomTypeName] = useState("");
   const contentRef = useRef(null);
   const [warnings, setWarnings] = useState({});
@@ -102,17 +108,20 @@ export default function RoomTypepage({ roomTypes, cookies, retrieve, user }) {
 
       {/* Room Types Table */}
       <TableContainer component={Paper}>
-        <Table>
+        <Table
+          sx={{
+            "& .MuiTableCell-root": {
+              p: isSmallScreen ? 1 : 2,
+              border: "1px solid black",
+            },
+          }}
+        >
           <TableHead>
             <TableRow>
               <TableCell>Name</TableCell>
               <TableCell>Created At</TableCell>
               <TableCell>Modified At</TableCell>
-              {
-                user?.role === "admin" ? (
-                  <TableCell>Actions</TableCell>
-                ): null
-              }
+              {user?.role === "admin" ? <TableCell>Actions</TableCell> : null}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -123,16 +132,15 @@ export default function RoomTypepage({ roomTypes, cookies, retrieve, user }) {
                 </TableCell>
                 <TableCell>{roomType.created_at.slice(0, 10)}</TableCell>
                 <TableCell>{roomType.updated_at.slice(0, 10)}</TableCell>
-                {
-                  user?.role === "admin" ? (
-                    <TableCell>
+                {user?.role === "admin" ? (
+                  <TableCell>
                     <Button
                       variant="contained"
                       color="warning"
                       onClick={() => {
                         setEditDialog(roomType);
                       }}
-                      sx={{ mr: 2, mb:2 }}
+                      sx={{ mr: 2, mb: isSmallScreen ? 2 : 0 }}
                     >
                       Edit
                     </Button>
@@ -144,8 +152,7 @@ export default function RoomTypepage({ roomTypes, cookies, retrieve, user }) {
                       Delete
                     </Button>
                   </TableCell>
-                  ): null
-                }
+                ) : null}
               </TableRow>
             ))}
           </TableBody>

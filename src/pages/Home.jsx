@@ -316,6 +316,7 @@ function Home() {
                 retrieve={retrieve}
                 roomTypes={roomTypes}
                 user={user}
+                isSmallScreen={isSmallScreen}
               />
             </CSSTransition>
 
@@ -332,6 +333,7 @@ function Home() {
                 retrieve={retrieve}
                 sections={sections}
                 user={user}
+                isSmallScreen={isSmallScreen}
               />
             </CSSTransition>
           </Box>
@@ -344,4 +346,3 @@ function Home() {
 }
 
 export default checkAuth(Home);
- 

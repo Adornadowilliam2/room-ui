@@ -27,6 +27,8 @@ import {
   IconButton,
   Icon,
   Tab,
+  List,
+  ListItem,
 } from "@mui/material";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
@@ -35,7 +37,12 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { MobileTimePicker } from "@mui/x-date-pickers/MobileTimePicker";
 import dayjs from "dayjs";
 import { toast } from "react-toastify";
-import { CalendarMonth, CalendarToday } from "@mui/icons-material";
+import {
+  CalendarMonth,
+  CalendarToday,
+  ExpandLess,
+  ExpandMore,
+} from "@mui/icons-material";
 
 export default function Mainpage({
   bookings,
@@ -103,6 +110,7 @@ export default function Mainpage({
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedDay, setSelectedDay] = useState(null);
   const [dayBookings, setDayBookings] = useState([]);
+  const [expandedRows, setExpandedRows] = useState([]);
 
   const handleBookingChange = (event) => {
     const { name, value } = event.target;
@@ -194,6 +202,24 @@ export default function Mainpage({
       }
     });
   };
+  const handleRowToggle = (id) => {
+    setExpandedRows((prev) =>
+      prev.includes(id) ? prev.filter((rowId) => rowId !== id) : [...prev, id]
+    );
+  };
+  const convertTo12HourFormat = (time) => {
+    let [hours, minutes] = time.split(":");
+    hours = parseInt(hours);
+
+    // Determine AM or PM
+    const amPm = hours >= 12 ? "PM" : "AM";
+
+    // Convert to 12-hour format
+    hours = hours % 12 || 12;
+
+    // Return the formatted time
+    return `${hours}:${minutes} ${amPm}`;
+  };
   return (
     <Container sx={{ marginTop: 4 }} ref={contentRef}>
       <Box
@@ -232,45 +258,113 @@ export default function Mainpage({
         <Dialog open={!!openDialog} fullWidth maxWidth="md">
           <DialogTitle>Bookings on {selectedDay}</DialogTitle>
           <DialogContent>
-            <TableContainer component={Paper}>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>User Name</TableCell>
-                    <TableCell>Room Name</TableCell>
-                    <TableCell>Time</TableCell>
-                    <TableCell>Subject</TableCell>
-                    <TableCell>Section</TableCell>
-                    <TableCell>Booked From</TableCell>
-                    <TableCell>Booked Until</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {dayBookings.length == 0 ? (
+            {isSmallScreen ? (
+              <TableContainer component={Paper}>
+                <Table
+                  sx={{
+                    "& .MuiTableCell-root": {
+                      p: isSmallScreen ? 1 : 2,
+                      border: "1px solid black",
+                    },
+                  }}
+                >
+                  <TableHead>
                     <TableRow>
-                      <TableCell colSpan={7} align="center">
-                        No bookings found for this day.
-                      </TableCell>
+                      <TableCell>User Name</TableCell>
+                      <TableCell>Room Name</TableCell>
+                      <TableCell>Time</TableCell>
+                      <TableCell>Subject</TableCell>
+                      <TableCell>Section</TableCell>
                     </TableRow>
-                  ) : (
-                    dayBookings.map((booking) => (
-                      <TableRow key={booking.id}>
-                        <TableCell>{booking?.users?.name}</TableCell>
-                        <TableCell>{booking?.rooms?.room_name}</TableCell>
-                        <TableCell>
-                          {booking.start_time.slice(0, 5)} -{" "}
-                          {booking.end_time.slice(0, 5)}
+                  </TableHead>
+                  <TableBody>
+                    {dayBookings.length == 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={7} align="center">
+                          No bookings found for this day.
                         </TableCell>
-                        <TableCell>{booking?.subjects?.subject_name}</TableCell>
-                        <TableCell>{booking?.sections?.section_name}</TableCell>
-                        <TableCell>{booking.book_from}</TableCell>
-                        <TableCell>{booking.book_until}</TableCell>
                       </TableRow>
-                    ))
-                  )}
-                </TableBody>
-              </Table>
-            </TableContainer>
+                    ) : (
+                      dayBookings.map((booking) => (
+                        <TableRow key={booking.id}>
+                          <TableCell>{booking?.users?.name}</TableCell>
+                          <TableCell>{booking?.rooms?.room_name}</TableCell>
+                          <TableCell>
+                            {convertTo12HourFormat(booking.start_time)} -{" "}
+                            {convertTo12HourFormat(booking.end_time)}
+                          </TableCell>
+                          <TableCell>
+                            {booking?.subjects?.subject_name}
+                          </TableCell>
+                          <TableCell>
+                            {booking?.sections?.section_name}
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            ) : (
+              <TableContainer component={Paper}>
+                <Table
+                  sx={{
+                    "& .MuiTableCell-root": {
+                      p: isSmallScreen ? 1 : 2,
+                      border: "1px solid black",
+                    },
+                  }}
+                >
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>User Name</TableCell>
+                      <TableCell>Room Name</TableCell>
+                      <TableCell>Time</TableCell>
+                      <TableCell>Subject</TableCell>
+                      <TableCell>Section</TableCell>
+                      <TableCell>Booked From</TableCell>
+                      <TableCell>Booked Until</TableCell>
+                      <TableCell>Created At</TableCell>
+                      <TableCell>Updated At</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {dayBookings.length == 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={7} align="center">
+                          No bookings found for this day.
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      dayBookings.map((booking) => (
+                        <TableRow key={booking.id}>
+                          <TableCell>{booking?.users?.name}</TableCell>
+                          <TableCell>{booking?.rooms?.room_name}</TableCell>
+                          <TableCell>
+                            {convertTo12HourFormat(booking.start_time)} -{" "}
+                            {convertTo12HourFormat(booking.end_time)}
+                          </TableCell>
+                          <TableCell>
+                            {booking?.subjects?.subject_name}
+                          </TableCell>
+                          <TableCell>
+                            {booking?.sections?.section_name}
+                          </TableCell>
+                          <TableCell>{booking.book_from}</TableCell>
+                          <TableCell>{booking.book_until}</TableCell>
+                          <TableCell>
+                            {booking.created_at.slice(0, 10)}
+                          </TableCell>
+                          <TableCell>
+                            {booking.updated_at.slice(0, 10)}
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            )}
           </DialogContent>
           <DialogActions>
             <Button
@@ -503,133 +597,156 @@ export default function Mainpage({
         </FormControl>
       </Container>
       <h2>Recents</h2>
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell
-                sx={{
-                  p: isSmallScreen ? 1 : 2,
-                  border: "1px solid black",
-                }}
-              >
-                More Info Click Here
-              </TableCell>
-              <TableCell
-                sx={{
-                  p: isSmallScreen ? 1 : 2,
-                  border: "1px solid black",
-                }}
-              >
-                Username
-              </TableCell>
-              <TableCell
-                sx={{
-                  p: isSmallScreen ? 1 : 2,
-                  border: "1px solid black",
-                }}
-              >
-                Room Name
-              </TableCell>
-              <TableCell
-                sx={{
-                  p: isSmallScreen ? 1 : 2,
-                  border: "1px solid black",
-                }}
-              >
-                Actions
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {bookings.map((booking) => (
-              <>
-                <TableRow key={booking.id}>
-                  <TableCell
-                    sx={{
-                      p: isSmallScreen ? 1 : 2,
-                      border: "1px solid black",
-                    }}
-                  >
-                    <Button
-                      onClick={() => handleRowToggle(booking.id)}
-                      size="small"
-                      variant="outlined"
-                      sx={{
-                        minWidth: "40px",
+      {isSmallScreen ? (
+        <TableContainer component={Paper}>
+          <Table
+            sx={{
+              "& .MuiTableCell-root": {
+                p: isSmallScreen ? 1 : 2,
+                border: "1px solid black",
+              },
+            }}
+          >
+            <TableHead>
+              <TableRow>
+                <TableCell>More Info Click Here</TableCell>
+                <TableCell>Username</TableCell>
+                <TableCell>Room Name</TableCell>
+                <TableCell>Subject</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {filteredBookings.map((booking) => (
+                <>
+                  <TableRow key={booking.id}>
+                    <TableCell>
+                      <Button
+                        onClick={() => handleRowToggle(booking.id)}
+                        size="small"
+                        variant="outlined"
+                        sx={{
+                          minWidth: "40px",
+                          textAlign: "center",
+                        }}
+                      >
+                        {expandedRows.includes(booking.id) ? (
+                          <ExpandLess />
+                        ) : (
+                          <ExpandMore />
+                        )}
+                      </Button>
+                    </TableCell>
+                    <TableCell>
+                      {booking?.id + ".) " + booking?.users?.name}
+                    </TableCell>
+                    <TableCell>{booking?.rooms?.room_name}</TableCell>
+                    <TableCell>{booking?.subjects?.subject_name}</TableCell>
+                  </TableRow>
+
+                  {/* Additional content to be displayed when row is expanded */}
+                  {expandedRows.includes(booking.id) && (
+                    <TableRow>
+                      <TableCell colSpan={4}>
+                        <List>
+                          <ListItem>
+                            Section: {booking?.sections?.section_name}
+                          </ListItem>
+                          <ListItem>
+                            Day of Week: {booking?.day_of_week}
+                          </ListItem>
+                          <ListItem>
+                            Time:{" "}
+                            {convertTo12HourFormat(
+                              booking?.start_time.slice(0, 5)
+                            )}{" "}
+                            -{" "}
+                            {convertTo12HourFormat(
+                              booking?.end_time.slice(0, 5)
+                            )}
+                          </ListItem>
+                          <ListItem>Book From: {booking?.book_from}</ListItem>
+                          <ListItem>Book Until: {booking?.book_until}</ListItem>
+                          <ListItem>Status: {booking?.status}</ListItem>
+                          <ListItem>
+                            Created At: {booking?.created_at.slice(0, 10)}
+                          </ListItem>
+                          <ListItem>
+                            Updated At: {booking?.updated_at.slice(0, 10)}
+                          </ListItem>
+                        </List>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      ) : (
+        <TableContainer component={Paper} sx={{ mt: 2 }}>
+          <Table
+            sx={{
+              "& .MuiTableCell-root": { p: 1, border: "1px solid black" },
+            }}
+          >
+            <TableHead>
+              <TableRow>
+                <TableCell sx={{ p: 1 }}>Username</TableCell>
+                <TableCell>Room</TableCell>
+                <TableCell>Subject</TableCell>
+                <TableCell>Section</TableCell>
+                <TableCell>Day of Week</TableCell>
+                <TableCell>Time</TableCell>
+                <TableCell>Book From</TableCell>
+                <TableCell>Book Until</TableCell>
+                <TableCell>Status</TableCell>
+                <TableCell>Created At</TableCell>
+                <TableCell>Updated At</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {(filteredBookings.length > 0 ? filteredBookings : bookings).map(
+                (booking) => (
+                  <TableRow key={booking.id}>
+                    <TableCell>
+                      {booking?.id + ".) " + booking?.users?.name}
+                    </TableCell>
+                    <TableCell>{booking?.rooms?.room_name}</TableCell>
+                    <TableCell>{booking?.subjects?.subject_name}</TableCell>
+                    <TableCell>{booking?.sections?.section_name}</TableCell>
+                    <TableCell>{booking?.day_of_week}</TableCell>
+                    <TableCell>
+                      {convertTo12HourFormat(booking?.start_time.slice(0, 5))} -{" "}
+                      {convertTo12HourFormat(booking?.end_time.slice(0, 5))}
+                    </TableCell>
+                    <TableCell>{booking?.book_from}</TableCell>
+                    <TableCell>{booking?.book_until}</TableCell>
+                    <TableCell
+                      style={{
+                        background:
+                          booking.status === "confirmed"
+                            ? "#72A98F"
+                            : booking.status === "pending"
+                            ? "orange"
+                            : booking.status === "rejected"
+                            ? "red"
+                            : "black",
+                        color: "black",
+                        fontWeight: "bold",
                         textAlign: "center",
                       }}
                     >
-                      {expandedRows.includes(booking.id) ? (
-                        <ExpandLess />
-                      ) : (
-                        <ExpandMore />
-                      )}
-                    </Button>
-                  </TableCell>
-                  <TableCell
-                    sx={{
-                      p: isSmallScreen ? 1 : 2,
-                      border: "1px solid black",
-                    }}
-                  >
-                    {booking?.id + ".) " + booking?.users?.name}
-                  </TableCell>
-                  <TableCell
-                    sx={{
-                      p: isSmallScreen ? 1 : 2,
-                      border: "1px solid black",
-                    }}
-                  >
-                    {booking?.rooms?.room_name}
-                  </TableCell>
-                  <TableCell sx={{ border: "1px solid black" }}>
-                    <Button
-                      onClick={() => setEditDialog(booking)}
-                      color="warning"
-                      variant="contained"
-                      sx={{ mr: 1 }}
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      onClick={() => setDeleteDialog(booking.id)}
-                      color="error"
-                      variant="contained"
-                    >
-                      Delete
-                    </Button>
-                  </TableCell>
-                </TableRow>
-
-                {/* Additional content to be displayed when row is expanded */}
-                {expandedRows.includes(booking.id) && (
-                  <TableRow>
-                    <TableCell colSpan={4}>
-                      <List>
-                        <ListItem>
-                          Subject: {booking?.subjects?.subject_name}
-                        </ListItem>
-                        <ListItem>
-                          Section: {booking?.sections?.section_name}
-                        </ListItem>
-                        <ListItem>Day of Week: {booking?.day_of_week}</ListItem>
-                        <ListItem>
-                          Time: {booking?.start_time.slice(0, 5)} -{" "}
-                          {booking?.end_time.slice(0, 5)}
-                        </ListItem>
-                        <ListItem>Book From: {booking?.book_from}</ListItem>
-                        <ListItem>Book Until: {booking?.book_until}</ListItem>
-                        <ListItem>Status: {booking?.status}</ListItem>
-                      </List>
+                      {booking?.status}
                     </TableCell>
+                    <TableCell>{booking?.created_at.slice(0, 10)}</TableCell>
+                    <TableCell>{booking?.updated_at.slice(0, 10)}</TableCell>
                   </TableRow>
-                )}
-              </>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+                )
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
     </Container>
   );
 }
