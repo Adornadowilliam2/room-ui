@@ -617,7 +617,7 @@ function Bookingpage({
                         onClick={() => setEditDialog(booking)}
                         color="warning"
                         variant="contained"
-                        sx={{ mr: 1, mb: 2 }}
+                        sx={{ mr: 1, mb: isSmallScreen ? 1 : 0 }}
                       >
                         Edit
                       </Button>
