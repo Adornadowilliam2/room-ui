@@ -108,7 +108,8 @@ function Home() {
 
 
   const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm")); // Check if the screen is small (phone/tablet)
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const isMediumScreen = useMediaQuery(theme.breakpoints.down("md")); 
 
   const toggleSidebar = () => {
     setOpen(!open);
@@ -140,7 +141,7 @@ function Home() {
           {/* Sidebar (Drawer) */}
           <Sidebar
             open={open}
-            handleSidebarClick={setSelectedSidebar}
+            handleSidebarClick={handleSidebarClick}
             handleLogout={handleLogout}
             isSmallScreen={isSmallScreen}
             setOpen={setOpen}
@@ -201,6 +202,7 @@ function Home() {
                 cookies={cookies}
                 retrieve={retrieve}
                 isSmallScreen={isSmallScreen}
+                isMediumScreen={isMediumScreen}
               />
             </CSSTransition>
 

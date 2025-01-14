@@ -54,6 +54,7 @@ export default function Mainpage({
   cookies,
   retrieve,
   isSmallScreen,
+  isMediumScreen,
 }) {
   const [date, setDate] = useState(new Date());
   const [searchTerm, setSearchTerm] = useState("");
@@ -211,13 +212,13 @@ export default function Mainpage({
     let [hours, minutes] = time.split(":");
     hours = parseInt(hours);
 
-    // Determine AM or PM
+    
     const amPm = hours >= 12 ? "PM" : "AM";
 
-    // Convert to 12-hour format
+    
     hours = hours % 12 || 12;
 
-    // Return the formatted time
+    
     return `${hours}:${minutes} ${amPm}`;
   };
   return (
@@ -443,7 +444,7 @@ export default function Mainpage({
                         <Checkbox
                           checked={newBooking.daysOfWeek.includes(day)}
                         />
-                        {day}
+                        {day.slice(0, 3)}
                       </MenuItem>
                     ))}
                   </Select>
@@ -596,7 +597,8 @@ export default function Mainpage({
           </Select>
         </FormControl>
       </Container>
-      <h2>Recents</h2>
+      <h2>Recents  </h2>
+     
       {isSmallScreen ? (
         <TableContainer component={Paper}>
           <Table
