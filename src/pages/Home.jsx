@@ -61,13 +61,8 @@ import Roompage from "../components/Roompage";
 function Home() {
   const [selectedSidebar, setSelectedSidebar] = useState("Dashboard");
   const [open, setOpen] = useState(true);
-  const [selectedCategory, setSelectedCategory] = useState("");
-
-  const [roomTypeName, setRoomTypeName] = useState("");
-  const [sectionName, setSectionName] = useState("");
   const [rooms, setRooms] = useState([]);
   const [bookings, setBookings] = useState([]);
-  const [snackMessage, setSnackMessage] = useState("");
   const [sections, setSections] = useState([]);
   const user = useSelector((state) => state.auth.user);
   const handleSidebarClick = (sidebar) => {
@@ -111,19 +106,7 @@ function Home() {
     retrieve();
   }, []);
 
-  const [date, setDate] = useState(new Date());
-  const [searchTerm, setSearchTerm] = useState(""); // Search term for filtering
-  const [daysFilter, setDaysFilter] = useState(7); // Default filter to 7 days
-  const [newBooking, setNewBooking] = useState({
-    roomId: "",
-    subjectId: "",
-    sectionId: "",
-    startTime: dayjs().startOf("hour"),
-    endTime: dayjs().add(1, "hour"),
-    daysOfWeek: [],
-    date_from: "",
-    date_until: "",
-  }); // State to handle new booking form
+
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm")); // Check if the screen is small (phone/tablet)
 
@@ -146,38 +129,9 @@ function Home() {
 
   const contentRef = useRef(null);
 
-  const [subjectType, setSubjectType] = useState("");
-  const [warnings, setWarnings] = useState({});
 
-  const [editDialog, setEditDialog] = useState(null);
-  const [deleteDialog, setDeleteDialog] = useState(null);
 
-  const handleEditRoomType = (id) => {
-    const body = {
-      room_type: editDialog?.room_type,
-    };
-    updateRoomType(body, cookies.AUTH_TOKEN, id).then((res) => {
-      if (res?.ok) {
-        toast.success(res.message);
-        retrieve();
-        setEditDialog(null);
-      } else {
-        toast.error(res.message);
-      }
-    });
-  };
 
-  const handleDeleteRoomType = (id) => {
-    destroyRoomType(cookies.AUTH_TOKEN, id).then((res) => {
-      if (res?.ok) {
-        toast.success(res.message);
-        retrieve();
-        setDeleteDialog(null);
-      } else {
-        toast.error(res.message);
-      }
-    });
-  };
 
   return (
     <>
