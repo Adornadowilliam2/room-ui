@@ -155,6 +155,7 @@ export default function Sidebar({
             "&:hover": {
               color: "black",
             },
+            mt:2
           }}
           button="true"
         >

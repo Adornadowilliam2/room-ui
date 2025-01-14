@@ -6,10 +6,12 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import $ from "jquery";
 import { useCookies } from "react-cookie";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { login } from "../redux/authSlice";
-
-export default function Login() {
+import checkAuth from "../hoc/checkAuth";
+import Home from "./Home";
+function Login() {
+  const user = useSelector((state) => state.auth.user);
   const [warnings, setWarnings] = useState({});
   const navigate = useNavigate();
   const [cookies, setCookie, removeCookie] = useCookies();
@@ -39,7 +41,10 @@ export default function Login() {
   };
 
   return (
-    <Container
+    <>
+    {
+      !user ? (
+        <Container
       style={{
         display: "flex",
         justifyContent: "center",
@@ -113,5 +118,12 @@ export default function Login() {
         </Typography>
       </Box>      </>
     </Container>
+      ): (
+        <Home />
+      )
+    }
+    </>
   );
 }
+
+export default checkAuth(Login);

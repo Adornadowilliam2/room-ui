@@ -1,45 +1,53 @@
 import { useState } from "react";
-import { TextField, Button, Box, Container, IconButton, Typography } from "@mui/material";
-import { Close, Email, Lock, Person } from "@mui/icons-material";
+import {
+  TextField,
+  Button,
+  Box,
+  Container, Typography
+} from "@mui/material";
+import { Email, Lock, Person } from "@mui/icons-material";
 import { register } from "../api/auth";
 import $ from "jquery";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useCookies } from "react-cookie";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { login } from "../redux/authSlice";
-export default function Register() {
-    const [warnings, setWarnings] = useState({});
-    const navigate = useNavigate();
+import checkAuth from "../hoc/checkAuth";
+import Home from "./Home";
+function Register() {
+  const [warnings, setWarnings] = useState({});
+  const navigate = useNavigate();
   const [cookies, setCookie, removeCookie] = useCookies();
   const dispatch = useDispatch();
-  
-  const handleSubmit = (e) => {
-      e.preventDefault();
-      const body = {
-          name: $("#name").val(), 
-          email: $("#email").val(),
-          password: $("#password").val(),
-          password_confirmation: $("#password_confirmation").val(),
-      }
-      register(body).then((res) => {
-            if (res?.ok) {
-                toast.success(res.message);
-                setWarnings({});
-              navigate("/");
-              setCookie("AUTH_TOKEN", res.data.token);
-              dispatch(login(res.data));
-            } else {
-              toast.error(res.message);
-              setWarnings(res?.errors);
-            }
-        })
 
- 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const body = {
+      name: $("#name").val(),
+      email: $("#email").val(),
+      password: $("#password").val(),
+      password_confirmation: $("#password_confirmation").val(),
+    };
+    register(body).then((res) => {
+      if (res?.ok) {
+        toast.success(res.message);
+        setWarnings({});
+        navigate("/");
+        setCookie("AUTH_TOKEN", res.data.token);
+        dispatch(login(res.data));
+      } else {
+        toast.error(res.message);
+        setWarnings(res?.errors);
+      }
+    });
   };
+  const user = useSelector((state) => state.auth.user);
 
   return (
-    <Container
+    <>
+    {!user ? (
+      <Container
       style={{
         display: "flex",
         justifyContent: "center",
@@ -47,7 +55,20 @@ export default function Register() {
         height: "100vh",
         flexDirection: "column",
       }}
-    >    <img src="https://www.mfi.org.ph/wp-content/uploads/2020/04/mfi-logo.png" alt="mfi logo" style={{ width: "100px", display: "block", margin: "0 auto",padding:"10px", borderRadius:"20px", border:"1px solid #ccc" }}/>
+    >
+      {" "}
+      <img
+        src="https://www.mfi.org.ph/wp-content/uploads/2020/04/mfi-logo.png"
+        alt="mfi logo"
+        style={{
+          width: "100px",
+          display: "block",
+          margin: "0 auto",
+          padding: "10px",
+          borderRadius: "20px",
+          border: "1px solid #ccc",
+        }}
+      />
       <Box
         component="form"
         onSubmit={handleSubmit}
@@ -56,7 +77,7 @@ export default function Register() {
           border: "1px solid black",
           p: 2,
           borderRadius: "5px",
-          mt:2
+          mt: 2,
         }}
       >
         <h2 style={{ textAlign: "center" }}>Register</h2>
@@ -129,5 +150,10 @@ export default function Register() {
         </Typography>
       </Box>
     </Container>
+    ): (
+      <Home />
+    )}
+    </>
   );
 }
+export default checkAuth(Register);
