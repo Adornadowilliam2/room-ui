@@ -45,8 +45,9 @@ export default function Register() {
         justifyContent: "center",
         alignItems: "center",
         height: "100vh",
+        flexDirection: "column",
       }}
-    >
+    >    <img src="https://www.mfi.org.ph/wp-content/uploads/2020/04/mfi-logo.png" alt="mfi logo" style={{ width: "100px", display: "block", margin: "0 auto",padding:"10px", borderRadius:"20px", border:"1px solid #ccc" }}/>
       <Box
         component="form"
         onSubmit={handleSubmit}
@@ -55,6 +56,7 @@ export default function Register() {
           border: "1px solid black",
           p: 2,
           borderRadius: "5px",
+          mt:2
         }}
       >
         <h2 style={{ textAlign: "center" }}>Register</h2>

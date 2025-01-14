@@ -45,8 +45,12 @@ export default function Login() {
         justifyContent: "center",
         alignItems: "center",
         height: "100vh",
+        flexDirection: "column",
       }}
     >
+      
+      <>
+      <img src="https://www.mfi.org.ph/wp-content/uploads/2020/04/mfi-logo.png" alt="mfi logo" style={{ width: "100px", display: "block", margin: "0 auto",padding:"10px", borderRadius:"20px", border:"1px solid #ccc" }}/>
       <Box
         component="form"
         onSubmit={handleSubmit}
@@ -55,8 +59,10 @@ export default function Login() {
           border: "1px solid black ",
           padding: "20px",
           borderRadius: "5px",
+          marginTop: "10px",
         }}
       >
+        
         <h2 style={{ textAlign: "center" }}>Login</h2>
         <TextField
           label="Email"
@@ -105,7 +111,7 @@ export default function Login() {
             <span style={{ color: "blue" }}>Register</span>
           </Link>
         </Typography>
-      </Box>
+      </Box>      </>
     </Container>
   );
 }
