@@ -151,7 +151,7 @@ function Bookingpage({
       status: editDialog?.status,
     };
     update(body, cookies.AUTH_TOKEN, id).then((res) => {
-      console.log(body);
+      console.log(res);
       if (res?.ok) {
         toast.success(res.message);
         retrieve();
@@ -400,6 +400,7 @@ function Bookingpage({
               </FormControl>
 
               {/* Date From */}
+              <Box>
               <TextField
                 label="Date From"
                 name="date_from"
@@ -412,8 +413,10 @@ function Bookingpage({
               {warnings?.book_from && (
                 <FormHelperText error>{warnings.book_from}</FormHelperText>
               )}
+              </Box>
 
               {/* Date Until */}
+              <Box>
               <TextField
                 label="Date Until"
                 name="date_until"
@@ -426,6 +429,7 @@ function Bookingpage({
               {warnings?.book_until && (
                 <FormHelperText error>{warnings.book_until}</FormHelperText>
               )}
+              </Box>
             </Box>
             <Button variant="contained" type="submit" fullWidth sx={{ mt: 2 }}>
               Add Booking
@@ -788,7 +792,13 @@ function Bookingpage({
               />
             </LocalizationProvider>
           </FormControl>
-          <FormControl fullWidth sx={{ marginTop: 2 }}>
+          <FormControl
+              fullWidth
+              sx={{
+                marginTop: 2,
+                maxWidth:"100%"
+              }}
+            >
             <InputLabel>Status</InputLabel>
             <Select
               name="status"

@@ -1,26 +1,10 @@
 import { useState, useRef, useEffect } from "react";
 import {
-  Container,
   AppBar,
   Toolbar,
-  Typography,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Box,
-  IconButton,
-  TextField,
-  Button,
-  useTheme,
-  useMediaQuery,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
+  Typography, Box,
+  IconButton, useTheme,
+  useMediaQuery
 } from "@mui/material";
 import { Menu } from "@mui/icons-material";
 import { CSSTransition } from "react-transition-group";
@@ -36,19 +20,12 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Login from "./Login";
 import {
-  destroyRoomType,
-  retrieveRoomTypes,
-  storeRoomType,
-  updateRoomType,
+  retrieveRoomTypes
 } from "../api/roomtype";
 import {
-  deleteSubject,
-  getSubjects,
-  storeSubject,
-  updateSubject,
+  getSubjects
 } from "../api/subject";
 import { getSections } from "../api/section";
-import dayjs from "dayjs";
 import { toast } from "react-toastify";
 import Sidebar from "../components/Sidebar";
 import Mainpage from "../components/Mainpage";
@@ -57,6 +34,7 @@ import RoomTypepage from "../components/RoomTypepage";
 import Sectionpage from "../components/Sectionpage";
 import Bookingpage from "../components/Bookingpage";
 import Roompage from "../components/Roompage";
+import Register from "./Register";
 
 function Home() {
   const [selectedSidebar, setSelectedSidebar] = useState("Dashboard");
@@ -295,7 +273,12 @@ function Home() {
           </Box>
         </Box>
       ) : (
-        <Login />
+        <>
+        <Login retrieve={retrieve}/>
+        <Box style={{display:"none"}}>
+        <Register retrieve={retrieve} />
+        </Box>
+        </>
       )}
     </>
   );

@@ -418,8 +418,7 @@ export default function Mainpage({
               </Box>
 
               {/* Days of the Week */}
-              <Box>
-                <FormControl fullWidth>
+              <FormControl fullWidth>
                   <InputLabel id="days-select-label">
                     Days of the Week
                   </InputLabel>
@@ -454,7 +453,6 @@ export default function Mainpage({
                     </FormHelperText>
                   ) : null}
                 </FormControl>
-              </Box>
 
               {/* Start Time */}
               <Box>

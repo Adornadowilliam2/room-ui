@@ -15,7 +15,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { login } from "../redux/authSlice";
 import checkAuth from "../hoc/checkAuth";
 import Home from "./Home";
-function Register() {
+function Register({retrieve}) {
   const [warnings, setWarnings] = useState({});
   const navigate = useNavigate();
   const [cookies, setCookie, removeCookie] = useCookies();
@@ -36,6 +36,7 @@ function Register() {
         navigate("/");
         setCookie("AUTH_TOKEN", res.data.token);
         dispatch(login(res.data));
+        retrieve()
       } else {
         toast.error(res.message);
         setWarnings(res?.errors);

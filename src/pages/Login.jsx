@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { TextField, Button, Container, Box, Typography, IconButton } from "@mui/material";
-import { Close, Email, Lock } from "@mui/icons-material";  
+import { TextField, Button, Container, Box, Typography } from "@mui/material";
+import { Email, Lock } from "@mui/icons-material";
 import { login as loginApi } from "../api/auth";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { login } from "../redux/authSlice";
 import checkAuth from "../hoc/checkAuth";
 import Home from "./Home";
-function Login() {
+function Login({retrieve}) {
   const user = useSelector((state) => state.auth.user);
   const [warnings, setWarnings] = useState({});
   const navigate = useNavigate();
@@ -33,6 +33,7 @@ function Login() {
         navigate("/");
         setCookie("AUTH_TOKEN", res.data.token);
         dispatch(login(res.data));
+        retrieve()
       } else {
         toast.error(res.message);
         setWarnings(res?.errors);
@@ -116,7 +117,8 @@ function Login() {
             <span style={{ color: "blue" }}>Register</span>
           </Link>
         </Typography>
-      </Box>      </>
+      </Box>      
+      </>
     </Container>
       ): (
         <Home />
