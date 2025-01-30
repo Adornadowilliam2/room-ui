@@ -14,9 +14,11 @@ import {
   InputLabel
 } from "@mui/material";
 import React, { useRef, useState } from "react";
+import { useDropzone } from 'react-dropzone';  // Import react-dropzone
 import { deleteRoom, updateRoom, storeRoom } from "../api/room";
 import { toast } from "react-toastify";
 import $ from "jquery";
+
 export default function Roompage({
   rooms,
   user,
@@ -28,8 +30,18 @@ export default function Roompage({
   const [viewDialog, setViewDialog] = useState(null);
   const [editDialog, setEditDialog] = useState(null);
   const [deleteDialog, setDeleteDialog] = useState(null);
+  const [roomTypeId, setRoomTypeId] = useState(null);
+  const [imageFile, setImageFile] = useState(null);  // State to store the selected image
 
   const contentRef = useRef(null);
+
+  const { getRootProps, getInputProps } = useDropzone({
+    onDrop: (acceptedFiles) => {
+      setImageFile(acceptedFiles[0]);  // Set the first accepted file as the image
+    },
+    accept: 'image/*',  // Restrict to image files
+  });
+
   const handleDeleteRoom = (id) => {
     deleteRoom(cookies.AUTH_TOKEN, id).then((res) => {
       if (res?.ok) {
@@ -61,8 +73,7 @@ export default function Roompage({
       }
     });
   };
-  
-  const [roomTypeId, setRoomTypeId] = useState(null);
+
   const handleAddRoom = (e) => {
     e.preventDefault();
     const body = new FormData();
@@ -71,10 +82,9 @@ export default function Roompage({
     body.append("room_type_id", roomTypeId);
     body.append("location", $("#location").val());
     body.append("description", $("#description").val());
-    body.append("image", $("#image").get(0).files[0]);
+    body.append("image", imageFile);  // Use the image from drag-and-drop or file input
 
     storeRoom(body, cookies.AUTH_TOKEN).then((res) => {
-      console.log(res);
       if (res?.ok) {
         toast.success(res?.message);
         setAddDialog(false);
@@ -82,10 +92,9 @@ export default function Roompage({
       } else {
         toast.error(res?.message);
       }
-
     });
+  };
 
-  }
   return (
     <Container ref={contentRef}>
       <Box>
@@ -98,6 +107,7 @@ export default function Roompage({
           Add Rooms
         </Button>
       </Box>
+
       <Dialog open={!!addDialog} component="form" onSubmit={handleAddRoom}>
         <DialogTitle>Add Room</DialogTitle>
         <DialogContent>
@@ -108,15 +118,20 @@ export default function Roompage({
             fullWidth
             id="room_name"
           />
-          <FormControl fullWidth ullWidth sx={{ marginTop: 2 }}>
+          <FormControl fullWidth sx={{ marginTop: 2 }}>
             <InputLabel id="room-type-label">Room Type</InputLabel>
-            <Select value={roomTypeId} displayEmpty fullWidth onChange={(e) => setRoomTypeId(e.target.value)}>
-            {roomTypes.map((roomType) => (
-              <MenuItem value={roomType.id} key={roomType.id}>
-                {roomType.room_type}
-              </MenuItem>
-            ))}
-          </Select>
+            <Select
+              value={roomTypeId}
+              displayEmpty
+              fullWidth
+              onChange={(e) => setRoomTypeId(e.target.value)}
+            >
+              {roomTypes.map((roomType) => (
+                <MenuItem value={roomType.id} key={roomType.id}>
+                  {roomType.room_type}
+                </MenuItem>
+              ))}
+            </Select>
           </FormControl>
           <TextField
             sx={{ mt: 2 }}
@@ -139,23 +154,26 @@ export default function Roompage({
             variant="outlined"
             fullWidth
           />
-          <Box>
-            <TextField
-              sx={{ mt: 2 }}
-              variant="outlined"
-              fullWidth
-              type="file"
-              id="image"
-              />
+          
+          {/* Drag and Drop or File Input */}
+          <Box sx={{ mt: 2 }} {...getRootProps()} style={{ border: '2px dashed #aaa', padding: '10px', cursor: 'pointer' }}>
+            <input {...getInputProps()} />
+            {imageFile ? (
+              <Typography variant="body2">Selected file: {imageFile.name}</Typography>
+            ) : (
+              <Typography variant="body2">Drag and drop an image, or click to select one</Typography>
+            )}
           </Box>
+          
         </DialogContent>
         <DialogActions>
-        
           <Button
             variant="contained"
             color="info"
-            onClick={() => {setAddDialog(false)
-              setRoomTypeId(null)
+            onClick={() => {
+              setAddDialog(false);
+              setRoomTypeId(null);
+              setImageFile(null);  // Reset image state on cancel
             }}
           >
             Cancel
@@ -165,6 +183,8 @@ export default function Roompage({
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Remaining room list rendering and other dialogs */}
       <Box
         sx={{
           display: "flex",
@@ -206,7 +226,7 @@ export default function Roompage({
               >
                 View
               </Button>
-              {user?.role == "admin" ? (
+              {user?.role === "admin" && (
                 <>
                   <Button
                     variant="contained"
@@ -224,12 +244,14 @@ export default function Roompage({
                     Delete
                   </Button>
                 </>
-              ) : null}
+              )}
             </Box>
           </Box>
         ))}
       </Box>
-      <Dialog open={!!viewDialog}>
+
+      {/* Dialogs for Edit, View, Delete */}
+            <Dialog open={!!viewDialog}>
         <DialogTitle>View Room</DialogTitle>
         <DialogActions>
           <Button

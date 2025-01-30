@@ -1,5 +1,5 @@
-import { Close } from "@mui/icons-material";
-import { Drawer, List, ListItem, ListItemText } from "@mui/material";
+import { Close, Dashboard, EventNote, Hotel, Subject,Settings, Assignment, Logout } from "@mui/icons-material";
+import { Drawer, List, ListItem, ListItemText, ListItemIcon } from "@mui/material";
 
 export default function Sidebar({
   open,
@@ -32,11 +32,13 @@ export default function Sidebar({
               display: "flex",
               justifyContent: "end",
             }}
-            button="true"
+            button
           >
             <Close />
           </ListItem>
         ) : null}
+
+        {/* Dashboard Item */}
         <ListItem
           onClick={() => {
             setOpen(false);
@@ -51,10 +53,15 @@ export default function Sidebar({
               color: "black",
             },
           }}
-          button="true"
+          button
         >
+          <ListItemIcon>
+            <Dashboard />
+          </ListItemIcon>
           <ListItemText primary="Dashboard" />
         </ListItem>
+
+        {/* Bookings Item */}
         <ListItem
           sx={{
             cursor: "pointer",
@@ -65,14 +72,19 @@ export default function Sidebar({
               color: "black",
             },
           }}
-          button="true"
+          button
           onClick={() => {
             handleSidebarClick("Bookings");
             setOpen(false);
           }}
         >
+          <ListItemIcon>
+            <EventNote />
+          </ListItemIcon>
           <ListItemText primary="Bookings" />
         </ListItem>
+
+        {/* Rooms Item */}
         <ListItem
           sx={{
             cursor: "pointer",
@@ -83,14 +95,19 @@ export default function Sidebar({
               color: "black",
             },
           }}
-          button="true"
+          button
           onClick={() => {
             handleSidebarClick("Rooms");
             setOpen(false);
           }}
         >
+          <ListItemIcon>
+            <Hotel />
+          </ListItemIcon>
           <ListItemText primary="Rooms" />
         </ListItem>
+
+        {/* Subjects Item */}
         <ListItem
           onClick={() => {
             handleSidebarClick("Subjects");
@@ -105,10 +122,15 @@ export default function Sidebar({
               color: "black",
             },
           }}
-          button="true"
+          button
         >
+          <ListItemIcon>
+            <Subject />
+          </ListItemIcon>
           <ListItemText primary="Subjects" />
         </ListItem>
+
+        {/* Room Types Item */}
         <ListItem
           onClick={() => {
             handleSidebarClick("Room Types");
@@ -123,10 +145,15 @@ export default function Sidebar({
               color: "black",
             },
           }}
-          button="true"
+          button
         >
+          <ListItemIcon>
+            <Settings />
+          </ListItemIcon>
           <ListItemText primary="Room Types" />
         </ListItem>
+
+        {/* Sections Item */}
         <ListItem
           onClick={() => {
             setOpen(false);
@@ -141,10 +168,15 @@ export default function Sidebar({
               color: "black",
             },
           }}
-          button="true"
+          button
         >
+          <ListItemIcon>
+            <Assignment />
+          </ListItemIcon>
           <ListItemText primary="Sections" />
         </ListItem>
+
+        {/* Logout Item */}
         <ListItem
           onClick={() => handleLogout()}
           sx={{
@@ -155,10 +187,13 @@ export default function Sidebar({
             "&:hover": {
               color: "black",
             },
-            mt:2
+            mt: 2,
           }}
-          button="true"
+          button
         >
+          <ListItemIcon>
+            <Logout />
+          </ListItemIcon>
           <ListItemText primary="Logout" />
         </ListItem>
       </List>
