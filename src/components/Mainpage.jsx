@@ -332,7 +332,7 @@ export default function Mainpage({
                   <TableBody>
                     {dayBookings.length == 0 ? (
                       <TableRow>
-                        <TableCell colSpan={7} align="center">
+                        <TableCell colSpan={9} align="center">
                           No bookings found for this day.
                         </TableCell>
                       </TableRow>
