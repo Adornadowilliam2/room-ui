@@ -11,14 +11,20 @@ import {
   TextField,
   Typography,
   FormControl,
-  InputLabel
+  InputLabel,
+  Slide
 } from "@mui/material";
 import React, { useRef, useState } from "react";
-import { useDropzone } from 'react-dropzone';  // Import react-dropzone
+import { useDropzone } from 'react-dropzone'; 
 import { deleteRoom, updateRoom, storeRoom } from "../api/room";
 import { toast } from "react-toastify";
 import $ from "jquery";
+import classroom from "../assets/classroom-xxl.png"
 
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 export default function Roompage({
   rooms,
   user,
@@ -82,7 +88,7 @@ export default function Roompage({
     body.append("room_type_id", roomTypeId);
     body.append("location", $("#location").val());
     body.append("description", $("#description").val());
-    body.append("image", imageFile);  // Use the image from drag-and-drop or file input
+    body.append("image", imageFile);  
 
     storeRoom(body, cookies.AUTH_TOKEN).then((res) => {
       if (res?.ok) {
@@ -108,8 +114,8 @@ export default function Roompage({
         </Button>
       </Box>
 
-      <Dialog open={!!addDialog} component="form" onSubmit={handleAddRoom}>
-        <DialogTitle>Add Room</DialogTitle>
+      <Dialog open={!!addDialog}    aria-describedby="alert-dialog-slide-description"  keepMounted component="form"  TransitionComponent={Transition} onSubmit={handleAddRoom}>
+        <DialogTitle style={{display:"flex",alignItems:"center", gap:"10px"}}> <img src={classroom} alt="classroom icon" width={"50px"} /> Add Room</DialogTitle>
         <DialogContent>
           <TextField
             sx={{ mt: 2 }}
@@ -117,6 +123,7 @@ export default function Roompage({
             variant="outlined"
             fullWidth
             id="room_name"
+            required
           />
           <FormControl fullWidth sx={{ marginTop: 2 }}>
             <InputLabel id="room-type-label">Room Type</InputLabel>
@@ -139,6 +146,7 @@ export default function Roompage({
             variant="outlined"
             fullWidth
             id="location"
+            required
           />
           <TextField
             sx={{ mt: 2 }}
@@ -146,6 +154,7 @@ export default function Roompage({
             variant="outlined"
             id="description"
             fullWidth
+            required
           />
           <TextField
             sx={{ mt: 2 }}
@@ -153,6 +162,7 @@ export default function Roompage({
             id="capacity"
             variant="outlined"
             fullWidth
+            required
           />
           
           {/* Drag and Drop or File Input */}
@@ -173,7 +183,7 @@ export default function Roompage({
             onClick={() => {
               setAddDialog(false);
               setRoomTypeId(null);
-              setImageFile(null);  // Reset image state on cancel
+              setImageFile(null);  
             }}
           >
             Cancel
