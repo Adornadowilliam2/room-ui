@@ -68,7 +68,7 @@ function Register({retrieve}) {
           margin: "0 auto",
           padding: "10px",
           borderRadius: "20px",
-          border: "1px solid #ccc",
+
         }}
       />
       <Box

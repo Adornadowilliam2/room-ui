@@ -63,7 +63,7 @@ function Login({retrieve}) {
         onSubmit={handleSubmit}
         style={{
           width: "300px",
-          border: "1px solid black ",
+  
           padding: "20px",
           borderRadius: "5px",
           marginTop: "10px",
