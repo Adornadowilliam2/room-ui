@@ -56,6 +56,7 @@ function Register({retrieve}) {
         height: "100vh",
         flexDirection: "column",
       }}
+      id="bg"
     >
       {" "}
       <img
@@ -80,6 +81,7 @@ function Register({retrieve}) {
           borderRadius: "5px",
           mt: 2,
         }}
+        id="form"
       >
         <h2 style={{ textAlign: "center" }}>Register</h2>
         <TextField

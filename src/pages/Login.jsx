@@ -45,7 +45,7 @@ function Login({retrieve}) {
     <>
     {
       !user ? (
-        <Container
+    <Container
       style={{
         display: "flex",
         justifyContent: "center",
@@ -53,6 +53,7 @@ function Login({retrieve}) {
         height: "100vh",
         flexDirection: "column",
       }}
+      id="bg"
     >
       
       <>
@@ -67,6 +68,7 @@ function Login({retrieve}) {
           borderRadius: "5px",
           marginTop: "10px",
         }}
+        id="form"
       >
         
         <h2 style={{ textAlign: "center" }}>Login</h2>

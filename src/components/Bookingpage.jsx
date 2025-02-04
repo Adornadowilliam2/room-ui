@@ -229,6 +229,7 @@ function Bookingpage({
   };
   return (
     <Box sx={{ padding: 2 }} ref={contentRef}>
+      <Typography>Choose a section to show the available:</Typography>
       {/* Section Selector */}
       <FormControl fullWidth>
         <InputLabel>Section name</InputLabel>
