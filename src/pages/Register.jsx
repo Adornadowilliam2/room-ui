@@ -76,7 +76,7 @@ function Register({retrieve}) {
         onSubmit={handleSubmit}
         sx={{
           width: "300px",
-          border: "1px solid black",
+ 
           p: 2,
           borderRadius: "5px",
           mt: 2,
