@@ -206,7 +206,7 @@ export default function Roompage({
           <Box sx={{ mt: 2, border: "1px solid black", p: 2 }} key={room.id}>
             <img
               src={
-                room.image || ""
+                room.image || "https://github.com/Adornadowilliam2/room-ui/blob/main/src/assets/mfi-room.png?raw=true"
               }
               alt="No image"
               style={{ width: "300px", height: "200px", objectFit: "cover" }}
