@@ -37,15 +37,14 @@ export default function Roompage({
   const [editDialog, setEditDialog] = useState(null);
   const [deleteDialog, setDeleteDialog] = useState(null);
   const [roomTypeId, setRoomTypeId] = useState(null);
-  const [imageFile, setImageFile] = useState(null);  // State to store the selected image
-
+  const [imageFile, setImageFile] = useState(null); 
   const contentRef = useRef(null);
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop: (acceptedFiles) => {
-      setImageFile(acceptedFiles[0]);  // Set the first accepted file as the image
+      setImageFile(acceptedFiles[0]); 
     },
-    accept: 'image/*',  // Restrict to image files
+    accept: 'image/*',  
   });
 
   const handleDeleteRoom = (id) => {
@@ -207,7 +206,7 @@ export default function Roompage({
           <Box sx={{ mt: 2, border: "1px solid black", p: 2 }} key={room.id}>
             <img
               src={
-                room.image || "https://mfi-cyan.vercel.app/Copy%20of%204.png"
+                room.image || "https://github.com/Adornadowilliam2/room-ui.git"
               }
               alt="No image"
               style={{ width: "300px", height: "200px", objectFit: "cover" }}
